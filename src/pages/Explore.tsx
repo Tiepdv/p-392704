@@ -46,7 +46,7 @@ const Explore = () => {
     try {
       setIsLoading(true);
       
-      const response = await fetch('https://europe-west3-showheroes-bi.cloudfunctions.net/test-2-2?number_of_weeks=numberOfWeeks');
+      const response = await fetch('https://europe-west3-showheroes-bi.cloudfunctions.net/test-2-2?weeks=numberOfWeeks');
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
