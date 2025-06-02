@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
@@ -27,14 +28,10 @@ const Explore = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilters, setActiveFilters] = useState<Array<{column: string, operator: string, value: string}>>([]);
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
-  const [numberOfWeeks, setNumberOfWeeks] = useState<string>("8");
+  const [numberOfWeeks, setNumberOfWeeks] = useState<string>("none");
   const [customWeeks, setCustomWeeks] = useState<string>("");
   const { toast } = useToast();
   
-  useEffect(() => {
-    fetchExploreData();
-  }, []);
-
   useEffect(() => {
     const currentTabData = exploreData[activeTab];
     if (currentTabData && currentTabData.length > 0 && visibleColumns.length === 0) {
@@ -42,11 +39,26 @@ const Explore = () => {
     }
   }, [exploreData, activeTab]);
 
+  // Only fetch data when weeks are selected (not "none")
+  useEffect(() => {
+    if (numberOfWeeks !== "none") {
+      fetchExploreData();
+    } else {
+      // Clear data when "None" is selected
+      setExploreData({});
+    }
+  }, [numberOfWeeks, customWeeks]);
+
   const fetchExploreData = async () => {
     try {
       setIsLoading(true);
       
-      const response = await fetch('https://europe-west3-showheroes-bi.cloudfunctions.net/test-2-2?weeks=numberOfWeeks');
+      const weeksValue = getWeeksValue();
+      const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2-2?weeks=${weeksValue}`;
+      
+      console.log(`Fetching data from: ${apiUrl}`);
+      
+      const response = await fetch(apiUrl);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -123,7 +135,9 @@ const Explore = () => {
   );
 
   const handleRefresh = () => {
-    fetchExploreData();
+    if (numberOfWeeks !== "none") {
+      fetchExploreData();
+    }
   };
 
   const handleApplyFilters = (filters: Array<{column: string, operator: string, value: string}>) => {
@@ -141,6 +155,14 @@ const Explore = () => {
     }
   };
 
+  const handleWeeksChange = (value: string) => {
+    setNumberOfWeeks(value);
+    // Reset other states when changing weeks
+    setSearchTerm("");
+    setActiveFilters([]);
+    setVisibleColumns([]);
+  };
+
   const availableTabs = Object.keys(exploreData);
 
   const getWeeksValue = () => {
@@ -149,6 +171,8 @@ const Explore = () => {
     }
     return numberOfWeeks;
   };
+
+  const shouldShowData = numberOfWeeks !== "none" && Object.keys(exploreData).length > 0;
 
   return (
     <div className="flex flex-col min-h-screen bg-[#0f1429]">
@@ -160,11 +184,12 @@ const Explore = () => {
               Number of weeks:
             </Label>
             <div className="flex items-center gap-2">
-              <Select value={numberOfWeeks} onValueChange={setNumberOfWeeks}>
+              <Select value={numberOfWeeks} onValueChange={handleWeeksChange}>
                 <SelectTrigger className="w-32">
-                  <SelectValue />
+                  <SelectValue placeholder="Select weeks" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
                   <SelectItem value="8">8 weeks</SelectItem>
                   <SelectItem value="12">12 weeks</SelectItem>
                   <SelectItem value="custom">Custom</SelectItem>
@@ -186,7 +211,7 @@ const Explore = () => {
         </div>
 
         <div className="space-y-6">
-          {availableTabs.length > 0 && (
+          {shouldShowData && availableTabs.length > 0 && (
             <SheetTabsList 
               tabs={availableTabs}
               selectedTab={activeTab}
@@ -195,38 +220,51 @@ const Explore = () => {
           )}
 
           <div className="bg-white rounded-lg shadow-md">
-            <SearchToolbar 
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              onRefresh={handleRefresh}
-              isLoading={isLoading}
-              data={currentTabData}
-              columns={currentTabData.length > 0 ? Object.keys(currentTabData[0]) : []}
-              visibleColumns={visibleColumns}
-              onColumnVisibilityChange={setVisibleColumns}
-              filteredData={filteredData}
-              onApplyFilters={handleApplyFilters}
-              tab="explore"
-            />
-
-            {currentTabData.length > 0 ? (
-              <PaginatedDataTable 
-                isLoading={isLoading}
-                data={currentTabData}
-                filteredData={filteredData}
-                visibleColumns={visibleColumns}
-                tab="explore"
-              />
-            ) : (
+            {numberOfWeeks === "none" ? (
               <div className="text-center py-12">
-                <p className="text-gray-500">
-                  {isLoading ? (
-                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary mb-4" />
-                  ) : (
-                    "No data available. Click refresh to try loading data again."
-                  )}
+                <p className="text-gray-500 text-lg mb-2">
+                  Please select the number of weeks to load data
                 </p>
-                </div>
+                <p className="text-gray-400 text-sm">
+                  Choose a weeks option from the dropdown above to get started
+                </p>
+              </div>
+            ) : (
+              <>
+                <SearchToolbar 
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  onRefresh={handleRefresh}
+                  isLoading={isLoading}
+                  data={currentTabData}
+                  columns={currentTabData.length > 0 ? Object.keys(currentTabData[0]) : []}
+                  visibleColumns={visibleColumns}
+                  onColumnVisibilityChange={setVisibleColumns}
+                  filteredData={filteredData}
+                  onApplyFilters={handleApplyFilters}
+                  tab="explore"
+                />
+
+                {currentTabData.length > 0 ? (
+                  <PaginatedDataTable 
+                    isLoading={isLoading}
+                    data={currentTabData}
+                    filteredData={filteredData}
+                    visibleColumns={visibleColumns}
+                    tab="explore"
+                  />
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500">
+                      {isLoading ? (
+                        <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary mb-4" />
+                      ) : (
+                        "No data available. Click refresh to try loading data again."
+                      )}
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
