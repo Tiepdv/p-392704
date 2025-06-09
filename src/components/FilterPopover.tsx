@@ -46,7 +46,6 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
   const [selectedColumn, setSelectedColumn] = useState<string>("");
   const [selectedOperator, setSelectedOperator] = useState<string>("equals");
   const [filterValue, setFilterValue] = useState<string>("");
-  const [activeFilters, setActiveFilters] = useState<{column: string, operator: string, value: string}[]>([]);
 
   // Get unique column names from the data
   const columns = data.length > 0 ? Object.keys(data[0]) : [];
@@ -58,28 +57,24 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
     }
   }, [columns, selectedColumn]);
 
-  // Always sync activeFilters with currentFilters prop
-  useEffect(() => {
-    console.log("FilterPopover: currentFilters changed:", currentFilters);
-    setActiveFilters([...currentFilters]);
-  }, [currentFilters]);
-
   const handleAddFilter = () => {
     if (selectedColumn && filterValue) {
-      const newFilters = [...activeFilters, { 
+      const newFilters = [...currentFilters, { 
         column: selectedColumn, 
         operator: selectedOperator, 
         value: filterValue 
       }];
-      setActiveFilters(newFilters);
+      // Apply the new filters immediately
+      if (onApplyFilters) {
+        onApplyFilters(newFilters);
+      }
       setFilterValue("");
     }
   };
 
   const handleRemoveFilter = (index: number) => {
-    const newFilters = [...activeFilters];
+    const newFilters = [...currentFilters];
     newFilters.splice(index, 1);
-    setActiveFilters(newFilters);
     // Apply the updated filters immediately
     if (onApplyFilters) {
       onApplyFilters(newFilters);
@@ -87,7 +82,6 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
   };
 
   const handleClearAllFilters = () => {
-    setActiveFilters([]);
     // Apply empty filters to reset the table
     if (onApplyFilters) {
       onApplyFilters([]);
@@ -95,11 +89,7 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
   };
 
   const handleApplyFilters = () => {
-    // Pass filters to parent component for processing
-    if (onApplyFilters) {
-      console.log("Applying filters:", activeFilters);
-      onApplyFilters(activeFilters);
-    }
+    // Close the popover after applying
     setIsOpen(false);
   };
 
@@ -192,10 +182,10 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
         </div>
       </div>
 
-      {activeFilters.length > 0 && (
+      {currentFilters.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium">Active Filters</h4>
+            <h4 className="text-sm font-medium">Current Active Filters</h4>
             <Button 
               variant="ghost" 
               size="sm" 
@@ -207,7 +197,7 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
             </Button>
           </div>
           <div className="space-y-2 max-h-48 overflow-y-auto">
-            {activeFilters.map((filter, index) => (
+            {currentFilters.map((filter, index) => (
               <div key={index} className="flex items-center gap-2 bg-gray-100 p-2 rounded">
                 <div className="flex-1 text-sm">
                   <span className="font-medium">{getDisplayName(filter.column)}</span>
@@ -229,7 +219,7 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
             ))}
           </div>
           <Button className="w-full" onClick={handleApplyFilters}>
-            Apply Filters
+            Close
           </Button>
         </div>
       )}
