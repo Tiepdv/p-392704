@@ -58,12 +58,11 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
     }
   }, [columns, selectedColumn]);
 
-  // Update activeFilters when currentFilters prop changes OR when popover opens
+  // Always sync activeFilters with currentFilters prop
   useEffect(() => {
-    if (isOpen) {
-      setActiveFilters([...currentFilters]);
-    }
-  }, [currentFilters, isOpen]);
+    console.log("FilterPopover: currentFilters changed:", currentFilters);
+    setActiveFilters([...currentFilters]);
+  }, [currentFilters]);
 
   const handleAddFilter = () => {
     if (selectedColumn && filterValue) {
