@@ -46,7 +46,7 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
   const [selectedColumn, setSelectedColumn] = useState<string>("");
   const [selectedOperator, setSelectedOperator] = useState<string>("equals");
   const [filterValue, setFilterValue] = useState<string>("");
-  const [activeFilters, setActiveFilters] = useState<{column: string, operator: string, value: string}[]>(currentFilters);
+  const [activeFilters, setActiveFilters] = useState<{column: string, operator: string, value: string}[]>([]);
 
   // Get unique column names from the data
   const columns = data.length > 0 ? Object.keys(data[0]) : [];
@@ -58,10 +58,12 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
     }
   }, [columns, selectedColumn]);
 
-  // Update activeFilters when currentFilters prop changes
+  // Update activeFilters when currentFilters prop changes OR when popover opens
   useEffect(() => {
-    setActiveFilters(currentFilters);
-  }, [currentFilters]);
+    if (isOpen) {
+      setActiveFilters([...currentFilters]);
+    }
+  }, [currentFilters, isOpen]);
 
   const handleAddFilter = () => {
     if (selectedColumn && filterValue) {
