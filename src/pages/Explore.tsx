@@ -243,6 +243,7 @@ const Explore = () => {
                   filteredData={filteredData}
                   onApplyFilters={handleApplyFilters}
                   tab="explore"
+                  activeFilters={activeFilters}
                 />
 
                 {currentTabData.length > 0 ? (

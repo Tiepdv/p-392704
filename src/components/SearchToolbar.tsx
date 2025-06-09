@@ -1,36 +1,36 @@
+
 import React, { useState } from "react";
-import { Search, Download, RefreshCcw, X, Filter, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import FilterPopover from "@/components/FilterPopover";
-import { downloadAsCSV, getDisplayName } from "@/utils/columnNameMapping";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Search, 
+  RefreshCw, 
+  Filter, 
+  Eye, 
+  EyeOff, 
+  ExternalLink,
+  Download,
+  X
+} from "lucide-react";
+import FilterPopover from "./FilterPopover";
+import { getDisplayName } from "@/utils/columnNameMapping";
 
 interface SearchToolbarProps {
   searchTerm: string;
   onSearchChange: (term: string) => void;
-  onRefresh?: () => void;
-  isLoading?: boolean;
+  onRefresh: () => void;
+  isLoading: boolean;
   data: any[];
   columns: string[];
   visibleColumns: string[];
   onColumnVisibilityChange: (columns: string[]) => void;
-  filteredData?: any[];
-  onApplyFilters?: (filters: Array<{column: string, operator: string, value: string}>) => void;
-  sheetUrl?: string; // Added sheetUrl prop to specify which URL to open
-  tab?: string; // Add tab prop to identify which tab we're on
+  filteredData: any[];
+  onApplyFilters: (filters: Array<{column: string, operator: string, value: string}>) => void;
+  sheetUrl?: string;
+  tab?: string;
+  activeFilters?: Array<{column: string, operator: string, value: string}>;
 }
 
 const SearchToolbar: React.FC<SearchToolbarProps> = ({
@@ -45,191 +45,213 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
   filteredData,
   onApplyFilters,
   sheetUrl,
-  tab
+  tab = "",
+  activeFilters = []
 }) => {
-  const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
-  const [columnToggleOpen, setColumnToggleOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isColumnSelectorOpen, setIsColumnSelectorOpen] = useState(false);
 
-  const handleClearSearch = () => {
-    onSearchChange("");
-  };
-
-  const handleDownloadCSV = () => {
-    // Use the filtered data if available, otherwise use all data
-    const dataToDownload = filteredData || data;
-    downloadAsCSV(dataToDownload, "table-data.csv", visibleColumns);
-  };
-
-  const handleColumnToggle = (column: string, isChecked: boolean) => {
-    if (isChecked) {
+  const handleColumnToggle = (column: string) => {
+    if (visibleColumns.includes(column)) {
+      onColumnVisibilityChange(visibleColumns.filter(col => col !== column));
+    } else {
       onColumnVisibilityChange([...visibleColumns, column]);
-    } else {
-      onColumnVisibilityChange(visibleColumns.filter((col) => col !== column));
     }
   };
 
-  const handleFilterApply = (filters: Array<{column: string, operator: string, value: string}>) => {
-    if (onApplyFilters) {
-      onApplyFilters(filters);
-    }
+  const exportToCSV = () => {
+    if (filteredData.length === 0) return;
+
+    const headers = visibleColumns.join(',');
+    const csvContent = [
+      headers,
+      ...filteredData.map(row => 
+        visibleColumns.map(col => {
+          const value = row[col];
+          // Escape quotes and wrap in quotes if contains comma, quote, or newline
+          if (value && (value.toString().includes(',') || value.toString().includes('"') || value.toString().includes('\n'))) {
+            return `"${value.toString().replace(/"/g, '""')}"`;
+          }
+          return value || '';
+        }).join(',')
+      )
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `data_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
-  const toggleAllColumns = (checked: boolean) => {
-    if (checked) {
-      onColumnVisibilityChange([...columns]);
-    } else {
-      onColumnVisibilityChange([]);
-    }
+  const handleRemoveFilter = (index: number) => {
+    const newFilters = [...activeFilters];
+    newFilters.splice(index, 1);
+    onApplyFilters(newFilters);
   };
-  
-  const openInGoogleSheets = () => {
-    // Use the provided sheetUrl or default if not provided
-    const sheetToOpen = sheetUrl || "https://docs.google.com/spreadsheets/d/1z2NQ13FS_eVrgRd-b49_tsGKtemXpi1v/";
-    window.open(sheetToOpen, '_blank');
-    
-    // Display a toast notification about opening the original sheet
-    const toast = document.createElement('div');
-    toast.style.position = 'fixed';
-    toast.style.bottom = '20px';
-    toast.style.right = '20px';
-    toast.style.padding = '15px';
-    toast.style.backgroundColor = '#4CAF50';
-    toast.style.color = 'white';
-    toast.style.borderRadius = '4px';
-    toast.style.zIndex = '1000';
-    toast.innerHTML = `
-      <div>
-        <p><strong>Opening original Google Sheet</strong></p>
-      </div>
-    `;
-    document.body.appendChild(toast);
-    
-    // Remove the toast after 5 seconds
-    setTimeout(() => {
-      document.body.removeChild(toast);
-    }, 5000);
+
+  const handleClearAllFilters = () => {
+    onApplyFilters([]);
   };
+
+  const shouldShowOpenSheet = tab !== "explore";
 
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-b gap-3">
-      <div className="relative w-full sm:w-auto sm:flex-1 max-w-md">
-        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-8 pr-10"
-        />
-        {searchTerm && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="absolute right-0 top-0 h-full px-2 py-0"
-            onClick={handleClearSearch}
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">Clear</span>
-          </Button>
-        )}
-      </div>
-
-      <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-        {/* Reordered buttons: Filters, Columns, Download, Open Sheet */}
-        <Popover open={filterPopoverOpen} onOpenChange={setFilterPopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Filters
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80" align="end">
-            <FilterPopover 
-              data={data} 
-              isOpen={filterPopoverOpen} 
-              setIsOpen={setFilterPopoverOpen}
-              onApplyFilters={handleFilterApply}
+    <div className="p-4 border-b bg-gray-50">
+      <div className="flex flex-col gap-4">
+        {/* Search and Actions Row */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search data..."
+              value={searchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="pl-10"
             />
-          </PopoverContent>
-        </Popover>
-
-        <DropdownMenu open={columnToggleOpen} onOpenChange={setColumnToggleOpen}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              Columns
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onRefresh}
+              disabled={isLoading}
+              className="flex items-center gap-1"
+            >
+              <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+              Refresh
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>Columns</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <div className="p-2">
-              <div className="mb-2 flex items-center">
-                <Checkbox 
-                  id="toggle-all-columns" 
-                  checked={visibleColumns.length === columns.length} 
-                  onCheckedChange={(checked) => toggleAllColumns(!!checked)}
-                  className="mr-2"
+
+            <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="flex items-center gap-1"
+                >
+                  <Filter className="h-4 w-4" />
+                  Filter
+                  {activeFilters.length > 0 && (
+                    <Badge variant="secondary" className="ml-1 h-5 px-1 text-xs">
+                      {activeFilters.length}
+                    </Badge>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-96" align="end">
+                <FilterPopover 
+                  data={data}
+                  isOpen={isFilterOpen}
+                  setIsOpen={setIsFilterOpen}
+                  onApplyFilters={onApplyFilters}
+                  currentFilters={activeFilters}
                 />
-                <label htmlFor="toggle-all-columns" className="text-sm cursor-pointer">
-                  Toggle All
-                </label>
-              </div>
-              <div className="max-h-60 overflow-y-auto grid grid-cols-2 gap-1">
-                {columns.map((column) => (
-                  <div key={column} className="flex items-center">
-                    <Checkbox
-                      id={`column-${column}`}
-                      checked={visibleColumns.includes(column)}
-                      onCheckedChange={(checked) => handleColumnToggle(column, !!checked)}
-                      className="mr-2"
-                    />
-                    <label 
-                      htmlFor={`column-${column}`}
-                      className="text-sm cursor-pointer truncate"
-                      title={getDisplayName(column)}
-                    >
-                      {getDisplayName(column)}
-                    </label>
+              </PopoverContent>
+            </Popover>
+
+            <Popover open={isColumnSelectorOpen} onOpenChange={setIsColumnSelectorOpen}>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="flex items-center gap-1"
+                >
+                  <Eye className="h-4 w-4" />
+                  Columns
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64" align="end">
+                <div className="space-y-2">
+                  <h3 className="font-medium">Show/Hide Columns</h3>
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {columns.map((column) => (
+                      <div key={column} className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleColumnToggle(column)}
+                          className="flex items-center space-x-2 text-sm hover:bg-gray-100 w-full p-1 rounded"
+                        >
+                          {visibleColumns.includes(column) ? (
+                            <Eye className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <EyeOff className="h-4 w-4 text-gray-400" />
+                          )}
+                          <span className="truncate">{getDisplayName(column)}</span>
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
+                </div>
+              </PopoverContent>
+            </Popover>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleDownloadCSV}
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Download
-        </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportToCSV}
+              disabled={filteredData.length === 0}
+              className="flex items-center gap-1"
+            >
+              <Download className="h-4 w-4" />
+              Export CSV
+            </Button>
 
-        {/* Only show Open Sheet button if it's NOT the Explore tab */}
-        {tab !== 'explore' && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={openInGoogleSheets}
-          >
-            <ExternalLink className="h-4 w-4 mr-2" />
-            Open Sheet
-          </Button>
+            {shouldShowOpenSheet && sheetUrl && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => window.open(sheetUrl, '_blank')}
+                className="flex items-center gap-1"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Open Sheet
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Active Filters Row */}
+        {activeFilters.length > 0 && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-sm text-gray-600 font-medium">Active filters:</span>
+            {activeFilters.map((filter, index) => (
+              <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                <span className="text-xs">
+                  {getDisplayName(filter.column)} {filter.operator} "{filter.value}"
+                </span>
+                <button
+                  onClick={() => handleRemoveFilter(index)}
+                  className="ml-1 hover:bg-gray-300 rounded-full p-0.5"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearAllFilters}
+              className="text-destructive hover:text-destructive h-6 px-2 text-xs"
+            >
+              Clear all
+            </Button>
+          </div>
         )}
 
-        {onRefresh && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onRefresh}
-            disabled={isLoading}
-          >
-            <RefreshCcw
-              className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
-            />
-            Refresh
-          </Button>
-        )}
+        {/* Results Summary */}
+        <div className="text-sm text-gray-600">
+          {data.length > 0 && (
+            <span>
+              Showing {filteredData.length} of {data.length} records
+              {searchTerm && ` matching "${searchTerm}"`}
+              {activeFilters.length > 0 && ` with ${activeFilters.length} filter${activeFilters.length > 1 ? 's' : ''} applied`}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -24,6 +24,7 @@ interface FilterPopoverProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   onApplyFilters?: (filters: Array<{column: string, operator: string, value: string}>) => void;
+  currentFilters?: Array<{column: string, operator: string, value: string}>;
 }
 
 // Define operators with their display values and icons
@@ -39,12 +40,13 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
   data, 
   isOpen, 
   setIsOpen,
-  onApplyFilters 
+  onApplyFilters,
+  currentFilters = []
 }) => {
   const [selectedColumn, setSelectedColumn] = useState<string>("");
   const [selectedOperator, setSelectedOperator] = useState<string>("equals");
   const [filterValue, setFilterValue] = useState<string>("");
-  const [activeFilters, setActiveFilters] = useState<{column: string, operator: string, value: string}[]>([]);
+  const [activeFilters, setActiveFilters] = useState<{column: string, operator: string, value: string}[]>(currentFilters);
 
   // Get unique column names from the data
   const columns = data.length > 0 ? Object.keys(data[0]) : [];
@@ -56,13 +58,19 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
     }
   }, [columns, selectedColumn]);
 
+  // Update activeFilters when currentFilters prop changes
+  useEffect(() => {
+    setActiveFilters(currentFilters);
+  }, [currentFilters]);
+
   const handleAddFilter = () => {
     if (selectedColumn && filterValue) {
-      setActiveFilters([...activeFilters, { 
+      const newFilters = [...activeFilters, { 
         column: selectedColumn, 
         operator: selectedOperator, 
         value: filterValue 
-      }]);
+      }];
+      setActiveFilters(newFilters);
       setFilterValue("");
     }
   };
@@ -71,6 +79,10 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
     const newFilters = [...activeFilters];
     newFilters.splice(index, 1);
     setActiveFilters(newFilters);
+    // Apply the updated filters immediately
+    if (onApplyFilters) {
+      onApplyFilters(newFilters);
+    }
   };
 
   const handleClearAllFilters = () => {

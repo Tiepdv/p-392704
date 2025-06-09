@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
@@ -150,6 +151,7 @@ const SellersJson = () => {
               onApplyFilters={handleApplyFilters}
               sheetUrl={openJsonUrl} // Pass URL for the "Open" button
               tab="sellers-json"
+              activeFilters={activeFilters}
             />
 
             {/* Data Table with Pagination and Sorting */}

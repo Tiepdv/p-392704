@@ -183,6 +183,7 @@ const Play = () => {
               filteredData={filteredData}
               onApplyFilters={handleApplyFilters}
               sheetUrl={openUrl}
+              activeFilters={activeFilters}
             />
 
             {/* Data Table with Pagination and Sorting */}
