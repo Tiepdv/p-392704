@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -70,10 +69,19 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isColumnSelectorOpen, setIsColumnSelectorOpen] = useState(false);
-  const { isColumnVisible } = useColumnVisibility(tab);
+  const { isColumnVisible, loading } = useColumnVisibility(tab);
+
+  console.log("SearchToolbar - tab:", tab, "columns:", columns, "loading:", loading);
 
   // Filter columns based on role permissions - only show columns that are visible to the current user's role
-  const availableColumns = columns.filter(column => isColumnVisible(column));
+  // Wait for the loading to complete before filtering
+  const availableColumns = loading ? columns : columns.filter(column => {
+    const visible = isColumnVisible(column);
+    console.log(`Column ${column} visibility:`, visible);
+    return visible;
+  });
+
+  console.log("Available columns after filtering:", availableColumns);
 
   const handleColumnToggle = (column: string) => {
     if (visibleColumns.includes(column)) {
@@ -259,7 +267,7 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleClearAllFilters}
+              onClick={() => onApplyFilters([])}
               className="text-destructive hover:text-destructive h-6 px-2 text-xs"
             >
               Clear all

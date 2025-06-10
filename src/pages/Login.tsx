@@ -88,6 +88,7 @@ const Login = () => {
               onApplyFilters={handleApplyFilters}
               sheetUrl={openSheetUrl} // Pass the correct URL for Market Lines
               activeFilters={activeFilters}
+              tab="market-lines"
             />
 
             {/* Data Table with Pagination and Sorting */}

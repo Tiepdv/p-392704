@@ -144,6 +144,7 @@ const Library = () => {
               onApplyFilters={handleApplyFilters}
               sheetUrl={openSheetUrl} // Pass the correct URL for Library
               activeFilters={activeFilters}
+              tab="library"
             />
 
             {/* Data Table with Pagination and Sorting */}
