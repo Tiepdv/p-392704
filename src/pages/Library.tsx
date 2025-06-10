@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { fetchPublicSheetData, parseSheetId } from "@/utils/googleApi";
@@ -116,7 +117,6 @@ const Library = () => {
 
   const handleApplyFilters = (filters: Array<{column: string, operator: string, value: string}>) => {
     setActiveFilters(filters);
-    // The actual filtering happens in the filteredData computation
   };
 
   return (
@@ -143,6 +143,7 @@ const Library = () => {
               filteredData={filteredData}
               onApplyFilters={handleApplyFilters}
               sheetUrl={openSheetUrl} // Pass the correct URL for Library
+              activeFilters={activeFilters}
             />
 
             {/* Data Table with Pagination and Sorting */}

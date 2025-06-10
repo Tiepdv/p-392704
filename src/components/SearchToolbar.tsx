@@ -12,8 +12,7 @@ import {
   EyeOff, 
   ExternalLink,
   Download,
-  X,
-  RotateCcw
+  X
 } from "lucide-react";
 import FilterPopover from "./FilterPopover";
 import { getDisplayName } from "@/utils/columnNameMapping";
@@ -128,22 +127,6 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
               <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-
-            {/* Clear All Filters Button - Always visible when there are active filters */}
-            {activeFilters.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleClearAllFilters}
-                className="flex items-center gap-1 text-orange-600 border-orange-300 hover:bg-orange-50"
-              >
-                <RotateCcw className="h-4 w-4" />
-                Clear All Filters
-                <Badge variant="secondary" className="ml-1 h-5 px-1 text-xs">
-                  {activeFilters.length}
-                </Badge>
-              </Button>
-            )}
 
             <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
               <PopoverTrigger asChild>

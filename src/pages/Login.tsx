@@ -87,6 +87,7 @@ const Login = () => {
               filteredData={filteredData}
               onApplyFilters={handleApplyFilters}
               sheetUrl={openSheetUrl} // Pass the correct URL for Market Lines
+              activeFilters={activeFilters}
             />
 
             {/* Data Table with Pagination and Sorting */}
