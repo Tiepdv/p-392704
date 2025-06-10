@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import {
   isRankColumn,
   isNumericColumn 
 } from "@/utils/euroFormatter";
+import { getDisplayName } from "@/utils/columnNameMapping";
 
 interface PaginatedDataTableProps {
   isLoading: boolean;
@@ -38,6 +40,14 @@ const getSellersJsonColumnName = (column: string) => {
     'seller_type': 'Seller Type'
   };
   return mapping[column] || column;
+};
+
+// Get the appropriate display name based on the tab
+const getColumnDisplayName = (column: string, tab: string) => {
+  if (tab === 'sellers-json') {
+    return getSellersJsonColumnName(column);
+  }
+  return getDisplayName(column);
 };
 
 const PaginatedDataTable: React.FC<PaginatedDataTableProps> = ({
@@ -156,13 +166,6 @@ const PaginatedDataTable: React.FC<PaginatedDataTableProps> = ({
     return String(value);
   };
 
-  const getColumnDisplayName = (column: string) => {
-    if (tab === 'sellers-json') {
-      return getSellersJsonColumnName(column);
-    }
-    return column;
-  };
-
   const PaginationControls = () => (
     <div className="flex items-center justify-between gap-4">
       <div className="text-sm text-muted-foreground">
@@ -259,7 +262,7 @@ const PaginatedDataTable: React.FC<PaginatedDataTableProps> = ({
                     onClick={() => handleSort(column)}
                   >
                     <div className="flex items-center gap-1">
-                      <span>{getColumnDisplayName(column)}</span>
+                      <span>{getColumnDisplayName(column, tab)}</span>
                       {sortConfig?.column === column && (
                         sortConfig.direction === 'asc' ? (
                           <ArrowUp className="h-4 w-4 text-primary" />

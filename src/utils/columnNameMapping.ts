@@ -10,6 +10,11 @@ export const columnDisplayNames: Record<string, string> = {
   "Priority_Weight": "Weight",
   "demand_partner": "SSP",
   "demand_market_division": "Division",
+  // SH Sellers.json specific mappings
+  "seller_id": "Seller ID",
+  "name": "Name",
+  "domain": "Domain",
+  "seller_type": "Seller Type",
   // Add more mappings as needed
 };
 

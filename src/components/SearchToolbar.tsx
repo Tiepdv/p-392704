@@ -33,6 +33,25 @@ interface SearchToolbarProps {
   activeFilters?: Array<{column: string, operator: string, value: string}>;
 }
 
+// Column name mapping for SH Sellers.json tab
+const getSellersJsonColumnName = (column: string) => {
+  const mapping: { [key: string]: string } = {
+    'seller_id': 'Seller ID',
+    'name': 'Name',
+    'domain': 'Domain',
+    'seller_type': 'Seller Type'
+  };
+  return mapping[column] || column;
+};
+
+// Get the appropriate display name based on the tab
+const getColumnDisplayName = (column: string, tab?: string) => {
+  if (tab === 'sellers-json') {
+    return getSellersJsonColumnName(column);
+  }
+  return getDisplayName(column);
+};
+
 const SearchToolbar: React.FC<SearchToolbarProps> = ({
   searchTerm,
   onSearchChange,
@@ -62,7 +81,7 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
   const exportToCSV = () => {
     if (filteredData.length === 0) return;
 
-    const headers = visibleColumns.join(',');
+    const headers = visibleColumns.map(col => getColumnDisplayName(col, tab)).join(',');
     const csvContent = [
       headers,
       ...filteredData.map(row => 
@@ -181,7 +200,7 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
                           ) : (
                             <EyeOff className="h-4 w-4 text-gray-400" />
                           )}
-                          <span className="truncate">{getDisplayName(column)}</span>
+                          <span className="truncate">{getColumnDisplayName(column, tab)}</span>
                         </button>
                       </div>
                     ))}
@@ -222,7 +241,7 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
             {activeFilters.map((filter, index) => (
               <Badge key={index} variant="secondary" className="flex items-center gap-1">
                 <span className="text-xs">
-                  {getDisplayName(filter.column)} {filter.operator} "{filter.value}"
+                  {getColumnDisplayName(filter.column, tab)} {filter.operator} "{filter.value}"
                 </span>
                 <button
                   onClick={() => handleRemoveFilter(index)}
