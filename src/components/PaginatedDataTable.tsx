@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ChevronLeft, ChevronRight, Loader2, ArrowUp, ArrowDown } from "lucide-react";
 import { useColumnVisibility } from "@/hooks/useColumnVisibility";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { 
   formatEuroValue, 
   formatNumericValue, 
@@ -14,9 +14,11 @@ import {
   isRevenueColumn, 
   isRpmoColumn, 
   isRankColumn,
-  isNumericColumn 
+  isNumericColumn,
+  isIdColumn 
 } from "@/utils/euroFormatter";
 import { getDisplayName } from "@/utils/columnNameMapping";
+import MobileDataTable from "./MobileDataTable";
 
 interface PaginatedDataTableProps {
   isLoading: boolean;
@@ -57,6 +59,21 @@ const PaginatedDataTable: React.FC<PaginatedDataTableProps> = ({
   visibleColumns,
   tab
 }) => {
+  const isMobile = useIsMobile();
+  
+  // Use mobile version on mobile devices
+  if (isMobile) {
+    return (
+      <MobileDataTable
+        isLoading={isLoading}
+        data={data}
+        filteredData={filteredData}
+        visibleColumns={visibleColumns}
+        tab={tab}
+      />
+    );
+  }
+
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(100);
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
@@ -145,6 +162,11 @@ const PaginatedDataTable: React.FC<PaginatedDataTableProps> = ({
   const formatCellValue = (value: any, columnName: string) => {
     if (value === null || value === undefined || value === '') {
       return '';
+    }
+
+    // Check if it's an ID column first - treat as string
+    if (isIdColumn(columnName)) {
+      return String(value);
     }
 
     if (isRevenueColumn(columnName)) {

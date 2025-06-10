@@ -105,9 +105,24 @@ export const isRankColumn = (columnName: string): boolean => {
 };
 
 /**
+ * Check if a column should be treated as an ID field (string formatting)
+ */
+export const isIdColumn = (columnName: string): boolean => {
+  const lowerColumnName = columnName.toLowerCase();
+  return lowerColumnName.includes('id') || 
+         lowerColumnName === 'seller id' ||
+         lowerColumnName === 'seller_id';
+};
+
+/**
  * Checks if a column contains numeric values (excluding revenue, RPMO, and rank columns)
  */
 export const isNumericColumn = (columnName: string, value: any): boolean => {
+  // Don't format ID columns as numeric even if they contain numbers
+  if (isIdColumn(columnName)) {
+    return false;
+  }
+  
   // Don't format if it's already a revenue, RPMO, or rank column
   if (isRevenueColumn(columnName) || isRpmoColumn(columnName) || isRankColumn(columnName)) {
     return false;
