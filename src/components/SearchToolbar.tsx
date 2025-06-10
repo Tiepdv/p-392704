@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import FilterPopover from "./FilterPopover";
 import { getDisplayName } from "@/utils/columnNameMapping";
+import { useColumnVisibility } from "@/hooks/useColumnVisibility";
 
 interface SearchToolbarProps {
   searchTerm: string;
@@ -69,6 +70,10 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isColumnSelectorOpen, setIsColumnSelectorOpen] = useState(false);
+  const { isColumnVisible } = useColumnVisibility(tab);
+
+  // Filter columns based on role permissions - only show columns that are visible to the current user's role
+  const availableColumns = columns.filter(column => isColumnVisible(column));
 
   const handleColumnToggle = (column: string) => {
     if (visibleColumns.includes(column)) {
@@ -189,7 +194,7 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
                 <div className="space-y-2">
                   <h3 className="font-medium">Show/Hide Columns</h3>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {columns.map((column) => (
+                    {availableColumns.map((column) => (
                       <div key={column} className="flex items-center space-x-2">
                         <button
                           onClick={() => handleColumnToggle(column)}
