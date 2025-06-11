@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,14 +51,6 @@ const getColumnDisplayName = (column: string, tab: string) => {
     return getSellersJsonColumnName(column);
   }
   return getDisplayName(column);
-};
-
-// Get the appropriate button text based on the tab
-const getOpenButtonText = (tab: string) => {
-  if (tab === 'sellers-json') {
-    return 'Open Web';
-  }
-  return 'Open Sheet';
 };
 
 const PaginatedDataTable: React.FC<PaginatedDataTableProps> = ({
