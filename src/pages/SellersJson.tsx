@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
@@ -30,7 +29,7 @@ const SellersJson = () => {
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
   const { toast } = useToast();
   
-  // URL for the Open Sheet button - linking directly to the sellers.json source
+  // URL for the Open Web button - linking directly to the sellers.json source
   const openJsonUrl = "https://platform.showheroes.com/app/sellers.json";
 
   useEffect(() => {
@@ -149,7 +148,7 @@ const SellersJson = () => {
               onColumnVisibilityChange={setVisibleColumns}
               filteredData={filteredData}
               onApplyFilters={handleApplyFilters}
-              sheetUrl={openJsonUrl} // Pass URL for the "Open" button
+              sheetUrl={openJsonUrl} // Pass URL for the "Open Web" button
               tab="sellers-json"
               activeFilters={activeFilters}
             />
