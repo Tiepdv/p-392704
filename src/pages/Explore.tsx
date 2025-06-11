@@ -192,6 +192,9 @@ const Explore = () => {
                   <SelectItem value="none">None</SelectItem>
                   <SelectItem value="8">8 weeks</SelectItem>
                   <SelectItem value="12">12 weeks</SelectItem>
+                  <SelectItem value="16">16 weeks</SelectItem>
+                  <SelectItem value="20">20 weeks</SelectItem>
+                  <SelectItem value="24">24 weeks</SelectItem>
                   <SelectItem value="custom">Custom</SelectItem>
                 </SelectContent>
               </Select>
