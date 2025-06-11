@@ -54,10 +54,10 @@ const Settings = () => {
     "Line", "Type", "Primary_Line", "Priority_Weight", "Account", 
     "demand_partner", "demand_market_division", "ID", "SELLER DOMAIN", "SELLER NAME","SELLER TYPE"];
 
-  // Sample columns for Explore (these would normally come from actual data)
+  // Use the same columns as Market Lines for Explore
   const sampleExploreColumns = [
-    "Line", "Key", "BU", "Score", "Priority_Weight", "Revenue", "BidOpp", "RPMO", 
-    "Primary_Line", "SELLER DOMAIN", "SELLER NAME", "SELLER TYPE", "Category", "Region"];
+     "Line", "Key","BU","Score","Score","Priority_Weight","Revenue","OMP_rev","PMP_rev","RES_rev","Revenue_all",
+    "BidOpp","OMP_bidopp","PMP_bidopp","RES_bidopp","BidOpp_all","RPMO","Primary_Line","SELLER DOMAIN","SELLER NAME","SELLER TYPE"];
 
   useEffect(() => {
     setMarketLinesColumns(sampleMarketLinesColumns);
@@ -73,6 +73,7 @@ const Settings = () => {
       setLoading(true);
       console.log('Fetching all users from profiles table...');
       
+      // First try to get all profiles
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('*')
@@ -80,34 +81,21 @@ const Settings = () => {
 
       if (profilesError) {
         console.error('Error fetching profiles:', profilesError);
-        toast({
-          title: "Error",
-          description: "Failed to fetch user profiles",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      console.log('Fetched profiles:', profilesData);
-      
-      if (profilesData && profilesData.length > 0) {
-        setUsers(profilesData as Profile[]);
-      } else {
-        console.log('No profiles found, checking auth.users table...');
-        
-        // If no profiles found, try to get users from auth.users (admin only operation)
+        // If there's an error, try to get users from auth (requires admin privileges)
         const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers();
         
         if (authError) {
           console.error('Error fetching auth users:', authError);
           toast({
-            title: "Warning",
-            description: "Could not fetch complete user list. Some users may not be visible.",
+            title: "Error",
+            description: "Failed to fetch user list. You may need admin privileges.",
             variant: "destructive",
           });
-        } else if (authUsers) {
+          return;
+        }
+
+        if (authUsers) {
           console.log('Found auth users:', authUsers);
-          // Convert auth users to profile format
           const convertedUsers = authUsers.map(user => ({
             id: user.id,
             email: user.email || '',
@@ -118,6 +106,48 @@ const Settings = () => {
             full_name: user.user_metadata?.full_name || null
           }));
           setUsers(convertedUsers);
+        }
+        return;
+      }
+
+      console.log('Fetched profiles:', profilesData);
+      
+      if (profilesData && profilesData.length > 0) {
+        setUsers(profilesData as Profile[]);
+      } else {
+        console.log('No profiles found, trying to get users from auth.users...');
+        
+        // If no profiles found, try to sync with auth.users
+        const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers();
+        
+        if (authError) {
+          console.error('Error fetching auth users:', authError);
+          toast({
+            title: "Warning",
+            description: "No user profiles found. Users may need to log in to create profiles.",
+            variant: "destructive",
+          });
+        } else if (authUsers && authUsers.length > 0) {
+          console.log('Found auth users, creating profiles:', authUsers);
+          
+          // Create missing profiles for existing auth users
+          const missingProfiles = authUsers.map(user => ({
+            id: user.id,
+            email: user.email || '',
+            role: 'viewer' as const
+          }));
+
+          const { data: insertedProfiles, error: insertError } = await supabase
+            .from('profiles')
+            .upsert(missingProfiles, { onConflict: 'id' })
+            .select('*');
+
+          if (insertError) {
+            console.error('Error creating profiles:', insertError);
+          } else {
+            console.log('Created profiles:', insertedProfiles);
+            setUsers(insertedProfiles as Profile[]);
+          }
         }
       }
     } catch (error: any) {

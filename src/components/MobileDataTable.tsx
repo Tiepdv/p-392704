@@ -50,6 +50,14 @@ const getColumnDisplayName = (column: string, tab: string) => {
   return getDisplayName(column);
 };
 
+// Get the appropriate button text based on the tab
+const getOpenButtonText = (tab: string) => {
+  if (tab === 'sellers-json' || tab === 'my-library') {
+    return 'Open Web';
+  }
+  return 'Open Sheet';
+};
+
 const MobileDataTable: React.FC<MobileDataTableProps> = ({
   isLoading,
   data,
