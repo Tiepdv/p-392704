@@ -58,7 +58,7 @@ const MobileDataTable: React.FC<MobileDataTableProps> = ({
   tab
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20); // Smaller page size for mobile
+  const [pageSize, setPageSize] = useState(20);
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
   const { isColumnVisible } = useColumnVisibility(tab);
 

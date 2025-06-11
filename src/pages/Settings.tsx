@@ -27,6 +27,7 @@ const Settings = () => {
   const [users, setUsers] = useState<Profile[]>([]);
   const [marketLinesColumns, setMarketLinesColumns] = useState<string[]>([]);
   const [libraryColumns, setLibraryColumns] = useState<string[]>([]);
+  const [exploreColumns, setExploreColumns] = useState<string[]>([]);
   const [viewerSettings, setViewerSettings] = useState<ColumnVisibilitySettings[]>([]);
   const [viewerTabSettings, setViewerTabSettings] = useState<TabVisibilitySettings>({
     role: 'viewer',
@@ -53,9 +54,15 @@ const Settings = () => {
     "Line", "Type", "Primary_Line", "Priority_Weight", "Account", 
     "demand_partner", "demand_market_division", "ID", "SELLER DOMAIN", "SELLER NAME","SELLER TYPE"];
 
+  // Sample columns for Explore (these would normally come from actual data)
+  const sampleExploreColumns = [
+    "Line", "Key", "BU", "Score", "Priority_Weight", "Revenue", "BidOpp", "RPMO", 
+    "Primary_Line", "SELLER DOMAIN", "SELLER NAME", "SELLER TYPE", "Category", "Region"];
+
   useEffect(() => {
     setMarketLinesColumns(sampleMarketLinesColumns);
     setLibraryColumns(sampleLibraryColumns);
+    setExploreColumns(sampleExploreColumns);
     fetchUsers();
     fetchSettings();
     fetchTabSettings();
@@ -64,7 +71,7 @@ const Settings = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      console.log('Fetching users from profiles table...');
+      console.log('Fetching all users from profiles table...');
       
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
@@ -106,7 +113,7 @@ const Settings = () => {
             email: user.email || '',
             role: 'viewer' as const,
             created_at: user.created_at,
-            updated_at: user.updated_at || user.created_at, // Add missing updated_at field
+            updated_at: user.updated_at || user.created_at,
             name: user.user_metadata?.name || null,
             full_name: user.user_metadata?.full_name || null
           }));
@@ -466,6 +473,7 @@ const Settings = () => {
               <TabsList>
                 <TabsTrigger value="market-lines">Market Lines</TabsTrigger>
                 <TabsTrigger value="library">Library</TabsTrigger>
+                <TabsTrigger value="explore">Explore</TabsTrigger>
               </TabsList>
               
               <TabsContent value="market-lines" className="space-y-4">
@@ -476,6 +484,11 @@ const Settings = () => {
               <TabsContent value="library" className="space-y-4">
                 <h3 className="text-lg font-medium">Library Tab Columns</h3>
                 {renderColumnToggles(libraryColumns, 'library')}
+              </TabsContent>
+              
+              <TabsContent value="explore" className="space-y-4">
+                <h3 className="text-lg font-medium">Explore Tab Columns</h3>
+                {renderColumnToggles(exploreColumns, 'explore')}
               </TabsContent>
             </Tabs>
             
