@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Target, Search, Book, Filter, Eye, Settings } from "lucide-react";
+import { Target, Search, Library, Mail, Filter, Eye, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
@@ -121,7 +121,7 @@ const Index = () => {
             
             <div className="text-center p-6 border border-green-500/40 rounded-xl hover:shadow-lg hover:bg-green-500/5 hover:border-green-400/60 transition-all duration-300 group">
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-500/30 transition-colors">
-                <Book className="h-8 w-8 text-green-400" />
+                <Library className="h-8 w-8 text-green-400" />
               </div>
               <h3 className="font-semibold text-white mb-3 text-lg">Library</h3>
               <p className="text-sm text-gray-400 leading-relaxed">Access your comprehensive data library with advanced search features</p>
@@ -133,6 +133,14 @@ const Index = () => {
               </div>
               <h3 className="font-semibold text-white mb-3 text-lg">Explore</h3>
               <p className="text-sm text-gray-400 leading-relaxed">Analyze data using various time periods</p>
+            </div>
+
+            <div className="text-center p-6 border border-green-500/40 rounded-xl hover:shadow-lg hover:bg-green-500/5 hover:border-green-400/60 transition-all duration-300 group">
+              <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-500/30 transition-colors">
+                <Mail className="h-8 w-8 text-green-400" />
+              </div>
+              <h3 className="font-semibold text-white mb-3 text-lg">Contact</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">Your point of contact</p>
             </div>
             
             
