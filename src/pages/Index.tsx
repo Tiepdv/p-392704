@@ -121,7 +121,7 @@ const Index = () => {
             
             <div className="text-center p-6 border border-green-500/40 rounded-xl hover:shadow-lg hover:bg-green-500/5 hover:border-green-400/60 transition-all duration-300 group">
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-500/30 transition-colors">
-                <Search className="h-8 w-8 text-green-400" />
+                <Book className="h-8 w-8 text-green-400" />
               </div>
               <h3 className="font-semibold text-white mb-3 text-lg">Library</h3>
               <p className="text-sm text-gray-400 leading-relaxed">Access your comprehensive data library with advanced search features</p>
