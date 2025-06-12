@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Target, Search, Filter, Eye, Settings } from "lucide-react";
+import { Target, Search, Book, Filter, Eye, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
