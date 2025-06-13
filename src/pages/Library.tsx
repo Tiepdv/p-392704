@@ -189,7 +189,7 @@ const Library = () => {
               </div>
             </Card>
             
-            <Link to="/sellers-json">
+            <Link to="https://platform.showheroes.com/app/sellers.json">
               <Card className="bg-white/10 backdrop-blur-md border border-white/10 transition-colors hover:bg-white/20 cursor-pointer">
                 <div className="p-6">
                   <h3 className="text-xl font-medium text-white mb-2">SH sellers.json</h3>
