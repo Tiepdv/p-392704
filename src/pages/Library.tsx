@@ -170,15 +170,17 @@ const Library = () => {
           </div>
           
           {/* Additional library resources */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="bg-white/10 backdrop-blur-md border border-white/10">
-              <div className="p-6">
-                <h3 className="text-xl font-medium text-white mb-2">IAB ads.txt dataset</h3>
-                <p className="text-gray-300">
-                  Access the IBA datasets for more information.
-                </p>
-              </div>
-            </Card>
+          <Link to="https://lookerstudio.google.com/u/0/reporting/0390f2c4-14cd-4c63-97b6-fd305e52b015/page/tEnnC">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="bg-white/10 backdrop-blur-md border border-white/10">
+                <div className="p-6">
+                  <h3 className="text-xl font-medium text-white mb-2">IAB ads.txt dataset</h3>
+                  <p className="text-gray-300">
+                    Access the IBA datasets for more information.
+                  </p>
+                </div>
+              </Card>
+            </Link>
             
             <Card className="bg-white/10 backdrop-blur-md border border-white/10">
               <div className="p-6">
