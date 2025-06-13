@@ -171,8 +171,8 @@ const Library = () => {
 
           
           {/* Additional library resources */}
-          <Link to="https://lookerstudio.google.com/u/0/reporting/0390f2c4-14cd-4c63-97b6-fd305e52b015/page/tEnnC">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Link to="https://lookerstudio.google.com/u/0/reporting/0390f2c4-14cd-4c63-97b6-fd305e52b015/page/tEnnC">
               <Card className="bg-white/10 backdrop-blur-md border border-white/10">
                 <div className="p-6">
                   <h3 className="text-xl font-medium text-white mb-2">IAB ads.txt dataset</h3>
