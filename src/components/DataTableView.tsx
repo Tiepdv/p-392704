@@ -33,11 +33,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
 
   return (
     <>
-      <div className="flex justify-between items-center p-4">
-        <div className="text-sm text-gray-500">
-          Showing {filteredData.length} of {data.length} records
-        </div>
-      </div>
+
       
       <div className="overflow-x-auto">
         <Table>
