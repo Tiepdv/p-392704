@@ -279,7 +279,7 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
         <div className="text-sm text-gray-600">
           {data.length > 0 && (
             <span>
-              Showing {filteredData.length} of {data.length} records
+  
               {searchTerm && ` matching "${searchTerm}"`}
               {activeFilters.length > 0 && ` with ${activeFilters.length} filter${activeFilters.length > 1 ? 's' : ''} applied`}
             </span>
