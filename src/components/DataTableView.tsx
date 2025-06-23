@@ -63,4 +63,5 @@ const DataTableView: React.FC<DataTableViewProps> = ({
   );
 };
 
+
 export default DataTableView;
