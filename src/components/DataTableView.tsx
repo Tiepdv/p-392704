@@ -33,7 +33,6 @@ const DataTableView: React.FC<DataTableViewProps> = ({
 
   return (
     <>
-
       
       <div className="overflow-x-auto">
         <Table>
