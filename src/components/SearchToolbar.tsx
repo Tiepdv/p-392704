@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -83,6 +84,9 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
 
   console.log("Available columns after filtering:", availableColumns);
 
+  // Get the actual visible columns for export (intersection of visibleColumns and role-permitted columns)
+  const exportColumns = loading ? visibleColumns : visibleColumns.filter(column => isColumnVisible(column));
+
   const handleColumnToggle = (column: string) => {
     if (visibleColumns.includes(column)) {
       onColumnVisibilityChange(visibleColumns.filter(col => col !== column));
@@ -94,11 +98,12 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
   const exportToCSV = () => {
     if (filteredData.length === 0) return;
 
-    const headers = visibleColumns.map(col => getColumnDisplayName(col, tab)).join(',');
+    // Use only the columns that are visible in the current view
+    const headers = exportColumns.map(col => getColumnDisplayName(col, tab)).join(',');
     const csvContent = [
       headers,
       ...filteredData.map(row => 
-        visibleColumns.map(col => {
+        exportColumns.map(col => {
           const value = row[col];
           // Escape quotes and wrap in quotes if contains comma, quote, or newline
           if (value && (value.toString().includes(',') || value.toString().includes('"') || value.toString().includes('\n'))) {
@@ -279,7 +284,7 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
         <div className="text-sm text-gray-600">
           {data.length > 0 && (
             <span>
-  
+              Showing {filteredData.length} of {data.length} records
               {searchTerm && ` matching "${searchTerm}"`}
               {activeFilters.length > 0 && ` with ${activeFilters.length} filter${activeFilters.length > 1 ? 's' : ''} applied`}
             </span>
