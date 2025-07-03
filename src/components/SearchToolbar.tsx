@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,7 @@ import {
 import FilterPopover from "./FilterPopover";
 import { getDisplayName } from "@/utils/columnNameMapping";
 import { useColumnVisibility } from "@/hooks/useColumnVisibility";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SearchToolbarProps {
   searchTerm: string;
@@ -71,6 +71,7 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isColumnSelectorOpen, setIsColumnSelectorOpen] = useState(false);
   const { isColumnVisible, loading } = useColumnVisibility(tab);
+  const { isAdmin } = useAuth();
 
   console.log("SearchToolbar - tab:", tab, "columns:", columns, "loading:", loading);
 
@@ -136,7 +137,7 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
     onApplyFilters([]);
   };
 
-  const shouldShowOpenSheet = tab !== "explore";
+  const shouldShowOpenSheet = tab !== "explore" && isAdmin;
 
   return (
     <div className="p-4 border-b bg-gray-50">
