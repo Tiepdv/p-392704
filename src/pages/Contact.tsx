@@ -18,6 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+{/*
 const teamMembers = [
   {
     id: 1,
@@ -43,7 +44,17 @@ const teamMembers = [
     position: "Data Analyst",
     email: "van.tiep.do@showheroes-group.com",
   },
-];
+]; 
+*/}
+const teamMembers = [
+  {
+    id: 1,
+    name: "BI Team",
+    position: "Showheroes Group",
+    email: "bi@showheroes-group.com",
+  },
+]; 
+
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -109,6 +120,7 @@ const Contact = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Contact Us</h1>
       
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         {teamMembers.map((member) => (
           <Card 
@@ -147,7 +159,8 @@ const Contact = () => {
           </Card>
         ))}
       </div>
-
+  
+      
       {/*
       <div className="max-w-2xl mx-auto">
         <Card>
