@@ -25,6 +25,7 @@ interface FilterPopoverProps {
   setIsOpen: (isOpen: boolean) => void;
   onApplyFilters?: (filters: Array<{column: string, operator: string, value: string}>) => void;
   currentFilters?: Array<{column: string, operator: string, value: string}>;
+  availableColumns?: string[];
 }
 
 // Define operators with their display values and icons
@@ -41,14 +42,15 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
   isOpen, 
   setIsOpen,
   onApplyFilters,
-  currentFilters = []
+  currentFilters = [],
+  availableColumns
 }) => {
   const [selectedColumn, setSelectedColumn] = useState<string>("");
   const [selectedOperator, setSelectedOperator] = useState<string>("equals");
   const [filterValue, setFilterValue] = useState<string>("");
 
-  // Get unique column names from the data
-  const columns = data.length > 0 ? Object.keys(data[0]) : [];
+  // Get unique column names from the data or use provided availableColumns
+  const columns = availableColumns || (data.length > 0 ? Object.keys(data[0]) : []);
   
   // Set first column as default when data loads and no column is selected
   useEffect(() => {

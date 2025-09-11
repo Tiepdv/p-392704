@@ -189,6 +189,7 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
                   setIsOpen={setIsFilterOpen}
                   onApplyFilters={onApplyFilters}
                   currentFilters={activeFilters}
+                  availableColumns={availableColumns}
                 />
               </PopoverContent>
             </Popover>
