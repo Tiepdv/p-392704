@@ -92,8 +92,8 @@ export const fetchSheets = async (spreadsheetId: string): Promise<any[]> => {
  */
 export const fetchPublicSheetData = async (sheetId: string, sheetName: string = "Sheet1"): Promise<any[]> => {
   try {
-    // Use export endpoint to get unfiltered data regardless of Google Sheets UI filters
-    const publicUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
+    // Use gviz endpoint with sheet name to get unfiltered data from specific tab
+    const publicUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
     
     const response = await axios.get(publicUrl, {
       // Set responseType to text for CSV parsing
