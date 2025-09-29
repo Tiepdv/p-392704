@@ -92,29 +92,12 @@ export const fetchSheets = async (spreadsheetId: string): Promise<any[]> => {
  */
 export const fetchPublicSheetData = async (sheetId: string, sheetName: string = "Sheet1"): Promise<any[]> => {
   try {
-    // Method 1: Try the export format first (this bypasses all UI filters)
-    // We'll use a systematic approach to find the correct GID
-    const sheetOrder = [
-      "GLOBAL", "DE", "ES", "IT", "FR", "GB", "US", "NL", "DK", "Fl", 
-      "NO", "SE", "CL", "BR", "AR", "MX", "CO", "PE", "LATAM", "NORDIC", "APAC"
-    ];
-    
-    let publicUrl: string;
-    
-    // Try export method with GID based on sheet position
-    const sheetIndex = sheetOrder.indexOf(sheetName);
-    if (sheetIndex >= 0) {
-      publicUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${sheetIndex === 0 ? '0' : sheetIndex}`;
-    } else {
-      // Fallback to gviz for unknown sheets
-      publicUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
-    }
-    
-    console.log(`Fetching data from: ${publicUrl}`);
+    // For public sheets, we can use this URL pattern
+    const publicUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
     
     const response = await axios.get(publicUrl, {
-      responseType: 'text',
-      timeout: 10000
+      // Set responseType to text for CSV parsing
+      responseType: 'text'
     });
     
     // Parse CSV data with better handling for quoted fields
