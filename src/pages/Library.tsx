@@ -20,10 +20,10 @@ const Library = () => {
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
   
   // Predefined Google Sheet URL - hardcoded but not shown to user
-  const sheetUrl = "https://docs.google.com/spreadsheets/d/1o14-srgPH-3-_kFfQSXUvse9Yz-PQaHxKTbVdkroxHc/edit";
-  
+  // const sheetUrl = "https://docs.google.com/spreadsheets/d/1o14-srgPH-3-_kFfQSXUvse9Yz-PQaHxKTbVdkroxHc/edit";
+  const sheetUrl = "https://docs.google.com/spreadsheets/d/1o14-srgPH-3-_kFfQSXUvse9Yz-PQaHxKTbVdkroxHc/edit?gid=1163638140#gid=1163638140"
   // URL for the Open Sheet button - explicitly for Library tab
-  const openSheetUrl = "https://docs.google.com/spreadsheets/d/1o14-srgPH-3-_kFfQSXUvse9Yz-PQaHxKTbVdkroxHc/";
+  const openSheetUrl = "https://docs.google.com/spreadsheets/d/1o14-srgPH-3-_kFfQSXUvse9Yz-PQaHxKTbVdkroxHc/edit?gid=1163638140#gid=1163638140";
 
   useEffect(() => {
     // Load data when component mounts
