@@ -21,7 +21,7 @@ const Library = () => {
   
   // Predefined Google Sheet URL - hardcoded but not shown to user
   // const sheetUrl = "https://docs.google.com/spreadsheets/d/1o14-srgPH-3-_kFfQSXUvse9Yz-PQaHxKTbVdkroxHc/edit";
-  const sheetUrl = "https://docs.google.com/spreadsheets/d/13rIRuh-caXCGEM14YRyBVg2kW5C1hFHtTkUlZ_bmRS4/edit?gid=0#gid=0";
+  const sheetUrl = "https://docs.google.com/spreadsheets/d/13rIRuh-caXCGEM14YRyBVg2kW5C1hFHtTkUlZ_bmRS4/edit";
   
   // URL for the Open Sheet button - explicitly for Library tab
   // const openSheetUrl = "https://docs.google.com/spreadsheets/d/1o14-srgPH-3-_kFfQSXUvse9Yz-PQaHxKTbVdkroxHc/";
