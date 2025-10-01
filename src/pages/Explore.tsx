@@ -190,6 +190,7 @@ const Explore = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="4">4 weeks</SelectItem>
                   <SelectItem value="8">8 weeks</SelectItem>
                   <SelectItem value="12">12 weeks</SelectItem>
                   <SelectItem value="16">16 weeks</SelectItem>
