@@ -62,6 +62,10 @@ const Library = () => {
       if (data && data.length > 0) {
         // Transform raw data to objects with headers as keys
         const transformedData = transformSheetData(data);
+        console.log('Library - Raw data rows:', data.length);
+        console.log('Library - Transformed data rows:', transformedData.length);
+        console.log('Library - First 5 transformed rows:', transformedData.slice(0, 5));
+        console.log('Library - Sample ID values:', transformedData.slice(0, 10).map(row => ({ ID: row['ID'], type: typeof row['ID'] })));
         setSheetData(transformedData);
       }
     } catch (error) {
