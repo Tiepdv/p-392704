@@ -45,7 +45,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         error: 'Failed to fetch sellers.json data',
-        message: error.message 
+        message: error instanceof Error ? error.message : 'Unknown error'
       }),
       {
         status: 500,

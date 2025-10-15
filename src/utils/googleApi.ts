@@ -150,18 +150,7 @@ export const fetchPublicSheetData = async (sheetId: string, sheetName: string = 
     
     const rows = parseCSV(response.data);
     
-    // Clean and convert numeric values
-    const cleanedRows = rows.map(row => 
-      row.map(cell => {
-        // Try to convert numeric strings to numbers
-        if (/^-?\d+(\.\d+)?$/.test(cell)) {
-          return parseFloat(cell);
-        }
-        return cell;
-      })
-    );
-    
-    return cleanedRows;
+    return rows;
   } catch (error) {
     console.error('Error fetching public sheet:', error);
     throw error;
