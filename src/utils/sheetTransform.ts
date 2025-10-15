@@ -15,7 +15,9 @@ export const transformSheetData = (values: any[]): any[] => {
   return rows.map(row => {
     const obj: Record<string, any> = {};
     headers.forEach((header: string, index: number) => {
-      obj[header] = row[index];
+      // Keep all values as strings to preserve ID and other text fields
+      const value = row[index];
+      obj[header] = value === null || value === undefined ? '' : String(value);
     });
     return obj;
   });
