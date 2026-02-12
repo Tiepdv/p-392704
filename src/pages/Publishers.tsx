@@ -52,7 +52,7 @@ const Publishers = () => {
       setIsLoading(true);
       
       const weeksValue = getWeeksValue();
-      const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2-2?weeks=${weeksValue}`;
+      const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?weeks=${weeksValue}`;
       
       console.log(`Fetching Publishers data from: ${apiUrl}`);
       
