@@ -28,6 +28,7 @@ const Settings = () => {
   const [marketLinesColumns, setMarketLinesColumns] = useState<string[]>([]);
   const [libraryColumns, setLibraryColumns] = useState<string[]>([]);
   const [exploreColumns, setExploreColumns] = useState<string[]>([]);
+  const [publishersColumns, setPublishersColumns] = useState<string[]>([]);
   const [viewerSettings, setViewerSettings] = useState<ColumnVisibilitySettings[]>([]);
   const [viewerTabSettings, setViewerTabSettings] = useState<TabVisibilitySettings>({
     role: 'viewer',
@@ -41,7 +42,8 @@ const Settings = () => {
     { id: 'market-lines', name: 'Market Lines' },
     { id: 'library', name: 'Library' },
     { id: 'my-library', name: 'SH Sellers.json' },
-    { id: 'explore', name: 'Explore' }
+    { id: 'explore', name: 'Explore' },
+    { id: 'publishers', name: 'Publishers' }
   ];
 
   // Sample columns for Market Lines (these would normally come from actual data)
@@ -59,10 +61,16 @@ const Settings = () => {
      "Line", "Key","BU","Score","Score","Priority_Weight","Revenue","OMP_rev","PMP_rev","RES_rev","Revenue_all",
     "BidOpp","OMP_bidopp","PMP_bidopp","RES_bidopp","BidOpp_all","RPMO","Primary_Line","SELLER DOMAIN","SELLER NAME","SELLER TYPE"];
 
+  // Use the same columns as Explore for Publishers
+  const samplePublishersColumns = [
+     "Line", "Key","BU","Score","Score","Priority_Weight","Revenue","OMP_rev","PMP_rev","RES_rev","Revenue_all",
+    "BidOpp","OMP_bidopp","PMP_bidopp","RES_bidopp","BidOpp_all","RPMO","Primary_Line","SELLER DOMAIN","SELLER NAME","SELLER TYPE"];
+
   useEffect(() => {
     setMarketLinesColumns(sampleMarketLinesColumns);
     setLibraryColumns(sampleLibraryColumns);
     setExploreColumns(sampleExploreColumns);
+    setPublishersColumns(samplePublishersColumns);
     fetchUsers();
     fetchSettings();
     fetchTabSettings();
@@ -504,6 +512,7 @@ const Settings = () => {
                 <TabsTrigger value="market-lines">Market Lines</TabsTrigger>
                 <TabsTrigger value="library">Library</TabsTrigger>
                 <TabsTrigger value="explore">Explore</TabsTrigger>
+                <TabsTrigger value="publishers">Publishers</TabsTrigger>
               </TabsList>
               
               <TabsContent value="market-lines" className="space-y-4">
@@ -519,6 +528,11 @@ const Settings = () => {
               <TabsContent value="explore" className="space-y-4">
                 <h3 className="text-lg font-medium">Explore Tab Columns</h3>
                 {renderColumnToggles(exploreColumns, 'explore')}
+              </TabsContent>
+              
+              <TabsContent value="publishers" className="space-y-4">
+                <h3 className="text-lg font-medium">Publishers Tab Columns</h3>
+                {renderColumnToggles(publishersColumns, 'publishers')}
               </TabsContent>
             </Tabs>
             

@@ -13,6 +13,7 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import SellersJson from "./pages/SellersJson";
 import Explore from "./pages/Explore";
+import Publishers from "./pages/Publishers";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { useTabVisibility } from "./hooks/useTabVisibility";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -46,6 +47,13 @@ const AppRoutes = () => {
           <Route path="/explore" element={
             <ProtectedRoute>
               {isTabVisible('explore') ? <Explore /> : <Index />}
+            </ProtectedRoute>
+          } />
+          
+          {/* Protected route for Publishers tab - check if tab is visible for the user's role */}
+          <Route path="/publishers" element={
+            <ProtectedRoute>
+              {isTabVisible('publishers') ? <Publishers /> : <Index />}
             </ProtectedRoute>
           } />
           
