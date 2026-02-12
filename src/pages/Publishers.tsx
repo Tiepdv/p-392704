@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { List } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -258,7 +258,7 @@ const Publishers = () => {
                   <div className="text-center py-12">
                     <p className="text-gray-500">
                       {isLoading ? (
-                        <List className="h-8 w-8 animate-spin mx-auto text-primary mb-4" />
+                        <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary mb-4" />
                       ) : (
                         "No data available. Click refresh to try loading data again."
                       )}
