@@ -12,9 +12,11 @@ import {
   formatNumericValue, 
   formatRpmoValue, 
   formatRankValue,
+  formatPercentageValue,
   isRevenueColumn, 
   isRpmoColumn, 
   isRankColumn,
+  isPercentageColumn,
   isNumericColumn,
   isIdColumn 
 } from "@/utils/euroFormatter";
@@ -168,6 +170,10 @@ const PaginatedDataTable: React.FC<PaginatedDataTableProps> = ({
     // Check if it's an ID column first - treat as string
     if (isIdColumn(columnName)) {
       return String(value);
+    }
+
+    if (isPercentageColumn(columnName)) {
+      return formatPercentageValue(value);
     }
 
     if (isRevenueColumn(columnName)) {
