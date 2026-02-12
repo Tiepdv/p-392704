@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTabVisibility } from "@/hooks/useTabVisibility";
-import { FileText, Library, Book, Mail, LogOut, Settings, Search } from "lucide-react";
+import { FileText, Library, Book, Mail, LogOut, Settings, Search, List} from "lucide-react";
 
 const NavBar = () => {
   const location = useLocation();
@@ -74,7 +74,7 @@ const NavBar = () => {
                   variant={isActive("/publishers") ? "default" : "ghost"}
                   className="gap-2"
                 >
-                  <Search className="h-4 w-4" />
+                  <List className="h-4 w-4" />
                   Publishers
                 </Button>
               </Link>
