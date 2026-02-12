@@ -178,7 +178,7 @@ const Publishers = () => {
           <h1 className="text-4xl font-bold text-white mb-2">Publishers</h1>
           <div className="flex items-center gap-4">
             <Label htmlFor="weeks-select" className="text-white text-sm">
-              Number of weeks:
+              Top lines:
             </Label>
             <div className="flex items-center gap-2">
               <Select value={numberOfWeeks} onValueChange={handleWeeksChange}>
