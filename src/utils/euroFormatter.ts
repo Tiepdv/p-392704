@@ -84,6 +84,22 @@ export const formatRankValue = (value: any): string => {
 };
 
 /**
+ * Formats percentage values (0.3 -> 30%, 0.8 -> 80%)
+ */
+export const formatPercentageValue = (value: any): string => {
+  // Convert to number, handle null/undefined/empty values
+  const numValue = Number(value);
+  
+  if (isNaN(numValue) || value === null || value === undefined || value === '') {
+    return String(value || '');
+  }
+  
+  // Multiply by 100 and round to avoid floating point issues
+  const percentValue = Math.round(numValue * 100);
+  return percentValue + '%';
+};
+
+/**
  * Checks if a column name contains 'rev' (case insensitive) indicating it's a revenue column
  */
 export const isRevenueColumn = (columnName: string): boolean => {
@@ -102,6 +118,13 @@ export const isRpmoColumn = (columnName: string): boolean => {
  */
 export const isRankColumn = (columnName: string): boolean => {
   return columnName.toLowerCase().includes('rank');
+};
+
+/**
+ * Checks if a column name is '%' (percentage column)
+ */
+export const isPercentageColumn = (columnName: string): boolean => {
+  return columnName === '%' || columnName.toLowerCase() === 'percentage';
 };
 
 /**
