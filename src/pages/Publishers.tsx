@@ -38,10 +38,13 @@ const Publishers = () => {
 
   useEffect(() => {
     const currentTabData = publishersData[activeTab];
-    if (currentTabData && currentTabData.length > 0 && visibleColumns.length === 0) {
+  
+    if (currentTabData && currentTabData.length > 0) {
       setVisibleColumns(Object.keys(currentTabData[0]));
     }
   }, [publishersData, activeTab]);
+
+  
 
   useEffect(() => {
     if (topLines === "custom") {
