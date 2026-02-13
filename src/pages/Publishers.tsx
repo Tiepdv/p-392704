@@ -171,7 +171,7 @@ const Publishers = () => {
 
   const getTopLinesValue = () => {
     if (topLines === "custom") {
-      return customTopLines || "8";
+      return customTopLines;
     }
     return topLines;
   };
