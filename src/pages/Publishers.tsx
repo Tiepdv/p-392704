@@ -365,10 +365,10 @@ const Publishers = () => {
             {topLines === "none" ? (
               <div className="text-center py-12">
                 <p className="text-gray-500 text-lg mb-2">
-                  Please select the number of weeks to load data
+                  Please select inputs to load data
                 </p>
                 <p className="text-gray-400 text-sm">
-                  Choose a weeks option from the dropdown above to get started
+                  Choose an option from the dropdown above to get started
                 </p>
               </div>
             ) : (
