@@ -167,7 +167,7 @@ const Explore = () => {
 
   const getWeeksValue = () => {
     if (numberOfWeeks === "custom") {
-      return customWeeks || "8";
+      return customWeeks;
     }
     return numberOfWeeks;
   };
