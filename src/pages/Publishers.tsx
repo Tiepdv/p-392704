@@ -44,7 +44,13 @@ const Publishers = () => {
   }, [publishersData, activeTab]);
 
   useEffect(() => {
-    if (topLines !== "none") {
+    if (topLines === "custom") {
+      if (!customTopLines || customTopLines.trim() === "") return;
+      const timer = setTimeout(() => {
+        fetchPublishersData();
+      }, 3000);
+      return () => clearTimeout(timer);
+    } else if (topLines !== "none") {
       fetchPublishersData();
     } else {
       setPublishersData({});
