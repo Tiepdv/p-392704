@@ -56,10 +56,7 @@ const Publishers = () => {
       setIsLoading(true);
 
       const topLinesValue = getTopLinesValue();
-      
-      if (!topLinesValue || topLinesValue === "none") {
-        return;
-      }
+  
       
       const params = new URLSearchParams({
         top_lines: topLinesValue
@@ -70,7 +67,7 @@ const Publishers = () => {
       
       const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?${params.toString()}`;
 
-const response = await fetch(apiUrl);
+      const response = await fetch(apiUrl);
 
 
       console.log(`Fetching Publishers data from: ${apiUrl}`);
