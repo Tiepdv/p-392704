@@ -32,8 +32,8 @@ const Publishers = () => {
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
   const [topLines, setTopLines] = useState<string>("none");
   const [customTopLines, setCustomTopLines] = useState<string>("");
-  const [accountName, setAccountName] = useState<string>("All");
-  const [bu, setBu] = useState<string>("All");
+  const [accountName, setAccountName] = useState<string>("none");
+  const [bu, setBu] = useState<string>("none");
   const { toast } = useToast();
 
   useEffect(() => {
