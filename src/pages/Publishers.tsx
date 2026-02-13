@@ -21,7 +21,7 @@ interface PublishersDataResponse {
 }
 
 const ACCOUNT_OPTIONS = ['A', 'B', 'C', 'D', 'E', 'Z'];
-const BU_OPTIONS = ['OPM', 'PMP', 'RESELLER'];
+const BU_OPTIONS = ['OMP', 'PMP', 'RESELLER'];
 
 const Publishers = () => {
   const [publishersData, setPublishersData] = useState<{[region: string]: PublishersData[]}>({});
@@ -32,8 +32,8 @@ const Publishers = () => {
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
   const [topLines, setTopLines] = useState<string>("none");
   const [customTopLines, setCustomTopLines] = useState<string>("");
-  const [accountName, setAccountName] = useState<string>("none");
-  const [bu, setBu] = useState<string>("none");
+  const [accountName, setAccountName] = useState<string>("All");
+  const [bu, setBu] = useState<string>("All");
   const { toast } = useToast();
 
   useEffect(() => {
