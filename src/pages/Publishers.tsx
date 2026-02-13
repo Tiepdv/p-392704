@@ -57,20 +57,20 @@ const Publishers = () => {
 
       const topLinesValue = getTopLinesValue();
       
-      // Build query parameters
-      const params = new URLSearchParams();
-      params.set("top_lines", topLinesValue);
-      
-      if (accountName && accountName !== "none") {
-        params.set("account_name", accountName);
+      if (!topLinesValue || topLinesValue === "none") {
+        return;
       }
       
-      if (bu && bu !== "none") {
-        params.set("bu", bu);
-      }
+      const params = new URLSearchParams({
+        top_lines: topLinesValue
+      });
       
-      // Build final API URL
+      if (accountName !== "none") params.set("account_name", accountName);
+      if (bu !== "none") params.set("bu", bu);
+      
       const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?${params.toString()}`;
+
+const response = await fetch(apiUrl);
 
 
       console.log(`Fetching Publishers data from: ${apiUrl}`);
