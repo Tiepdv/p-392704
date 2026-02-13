@@ -32,8 +32,8 @@ const Publishers = () => {
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
   const [topLines, setTopLines] = useState<string>("none");
   const [customTopLines, setCustomTopLines] = useState<string>("");
-  const [accountName, setAccountName] = useState<string>("none");
-  const [bu, setBu] = useState<string>("none");
+  const [accountName, setAccountName] = useState<string>("all");
+  const [bu, setBu] = useState<string>("all");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -74,8 +74,8 @@ const Publishers = () => {
         top_lines: topLinesValue
       });
       
-      if (accountName !== "none") params.set("account_name", accountName);
-      if (bu !== "none") params.set("bu", bu);
+      if (accountName !== "all") params.set("account_name", accountName);
+      if (bu !== "all") params.set("bu", bu);
       
       const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?${params.toString()}`;
 
@@ -209,7 +209,7 @@ const Publishers = () => {
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
                   {ACCOUNT_OPTIONS.map(opt => (
                     <SelectItem key={opt} value={opt}>{opt}</SelectItem>
                   ))}
@@ -223,7 +223,7 @@ const Publishers = () => {
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
                   {BU_OPTIONS.map(opt => (
                     <SelectItem key={opt} value={opt}>{opt}</SelectItem>
                   ))}
