@@ -67,9 +67,6 @@ const Publishers = () => {
       
       const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?${params.toString()}`;
 
-      const response = await fetch(apiUrl);
-
-
       console.log(`Fetching Publishers data from: ${apiUrl}`);
 
       const response = await fetch(apiUrl);
