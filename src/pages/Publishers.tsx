@@ -45,17 +45,20 @@ const Publishers = () => {
 
   useEffect(() => {
     if (topLines === "custom") {
-      if (!customTopLines || customTopLines.trim() === "") return;
-      const timer = setTimeout(() => {
-        fetchPublishersData();
-      }, 3000);
-      return () => clearTimeout(timer);
+      // Custom input is handled by onBlur, not here
+      return;
     } else if (topLines !== "none") {
       fetchPublishersData();
     } else {
       setPublishersData({});
     }
-  }, [topLines, customTopLines, accountName, bu]);
+  }, [topLines, accountName, bu]);
+
+  const handleCustomBlur = () => {
+    if (customTopLines && customTopLines.trim() !== "") {
+      fetchPublishersData();
+    }
+  };
 
   const fetchPublishersData = async () => {
     try {
@@ -247,6 +250,7 @@ const Publishers = () => {
                   placeholder="Enter value"
                   value={customTopLines}
                   onChange={(e) => setCustomTopLines(e.target.value)}
+                  onBlur={handleCustomBlur}
                   className="w-24"
                   min="1"
                 />

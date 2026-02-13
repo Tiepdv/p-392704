@@ -41,13 +41,21 @@ const Explore = () => {
 
   // Only fetch data when weeks are selected (not "none")
   useEffect(() => {
-    if (numberOfWeeks !== "none") {
+    if (numberOfWeeks === "custom") {
+      // Custom input is handled by onBlur, not here
+      return;
+    } else if (numberOfWeeks !== "none") {
       fetchExploreData();
     } else {
-      // Clear data when "None" is selected
       setExploreData({});
     }
-  }, [numberOfWeeks, customWeeks]);
+  }, [numberOfWeeks]);
+
+  const handleCustomWeeksBlur = () => {
+    if (customWeeks && customWeeks.trim() !== "") {
+      fetchExploreData();
+    }
+  };
 
   const fetchExploreData = async () => {
     try {
@@ -205,6 +213,7 @@ const Explore = () => {
                   placeholder="Enter weeks"
                   value={customWeeks}
                   onChange={(e) => setCustomWeeks(e.target.value)}
+                  onBlur={handleCustomWeeksBlur}
                   className="w-24"
                   min="1"
                   max="52"
