@@ -74,8 +74,8 @@ const Publishers = () => {
         top_lines: topLinesValue
       });
       
-      if (accountName !== "all") params.set("account_name", accountName);
-      if (bu !== "all") params.set("bu", bu);
+      params.set("account_name", accountName);
+      params.set("bu", bu);
       
       const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?${params.toString()}`;
 
