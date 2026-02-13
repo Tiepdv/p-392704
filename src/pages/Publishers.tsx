@@ -20,6 +20,9 @@ interface PublishersDataResponse {
   };
 }
 
+const ACCOUNT_OPTIONS = ['A', 'B', 'C', 'D', 'E', 'Z'];
+const BU_OPTIONS = ['OPM', 'PMP', 'RESELLER'];
+
 const Publishers = () => {
   const [publishersData, setPublishersData] = useState<{[region: string]: PublishersData[]}>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -27,8 +30,10 @@ const Publishers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilters, setActiveFilters] = useState<Array<{column: string, operator: string, value: string}>>([]);
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
-  const [numberOfWeeks, setNumberOfWeeks] = useState<string>("none");
-  const [customWeeks, setCustomWeeks] = useState<string>("");
+  const [topLines, setTopLines] = useState<string>("none");
+  const [customTopLines, setCustomTopLines] = useState<string>("");
+  const [accountName, setAccountName] = useState<string>("none");
+  const [bu, setBu] = useState<string>("none");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -39,19 +44,22 @@ const Publishers = () => {
   }, [publishersData, activeTab]);
 
   useEffect(() => {
-    if (numberOfWeeks !== "none") {
+    if (topLines !== "none") {
       fetchPublishersData();
     } else {
       setPublishersData({});
     }
-  }, [numberOfWeeks, customWeeks]);
+  }, [topLines, customTopLines, accountName, bu]);
 
   const fetchPublishersData = async () => {
     try {
       setIsLoading(true);
 
-      const weeksValue = getWeeksValue();
-      const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?weeks=${weeksValue}`;
+      const topLinesValue = getTopLinesValue();
+      const params = new URLSearchParams({ top_lines: topLinesValue });
+      if (accountName !== "none") params.set("account_name", accountName);
+      if (bu !== "none") params.set("bu", bu);
+      const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?${params.toString()}`;
 
       console.log(`Fetching Publishers data from: ${apiUrl}`);
 
@@ -132,7 +140,7 @@ const Publishers = () => {
   );
 
   const handleRefresh = () => {
-    if (numberOfWeeks !== "none") {
+    if (topLines !== "none") {
       fetchPublishersData();
     }
   };
@@ -152,8 +160,8 @@ const Publishers = () => {
     }
   };
 
-  const handleWeeksChange = (value: string) => {
-    setNumberOfWeeks(value);
+  const handleTopLinesChange = (value: string) => {
+    setTopLines(value);
     setSearchTerm("");
     setActiveFilters([]);
     setVisibleColumns([]);
@@ -161,28 +169,54 @@ const Publishers = () => {
 
   const availableTabs = Object.keys(publishersData);
 
-  const getWeeksValue = () => {
-    if (numberOfWeeks === "custom") {
-      return customWeeks || "8";
+  const getTopLinesValue = () => {
+    if (topLines === "custom") {
+      return customTopLines || "8";
     }
-    return numberOfWeeks;
+    return topLines;
   };
 
-  const shouldShowData = numberOfWeeks !== "none" && Object.keys(publishersData).length > 0;
+  const shouldShowData = topLines !== "none" && Object.keys(publishersData).length > 0;
 
   return (
     <div className="flex flex-col min-h-screen bg-[#0f1429]">
       <div className="container mx-auto px-4 py-6 flex-grow">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-4xl font-bold text-white mb-2">Publishers</h1>
-          <div className="flex items-center gap-4">
-            <Label htmlFor="weeks-select" className="text-white text-sm">
-              Top lines:
-            </Label>
+          <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
-              <Select value={numberOfWeeks} onValueChange={handleWeeksChange}>
+              <Label className="text-white text-sm">Account:</Label>
+              <Select value={accountName} onValueChange={setAccountName}>
                 <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Select weeks" />
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {ACCOUNT_OPTIONS.map(opt => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
+              <Label className="text-white text-sm">BU:</Label>
+              <Select value={bu} onValueChange={setBu}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {BU_OPTIONS.map(opt => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
+              <Label className="text-white text-sm">Top lines:</Label>
+              <Select value={topLines} onValueChange={handleTopLinesChange}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">None</SelectItem>
@@ -195,15 +229,14 @@ const Publishers = () => {
                   <SelectItem value="custom">Custom</SelectItem>
                 </SelectContent>
               </Select>
-              {numberOfWeeks === "custom" && (
+              {topLines === "custom" && (
                 <Input
                   type="number"
-                  placeholder="Enter weeks"
-                  value={customWeeks}
-                  onChange={(e) => setCustomWeeks(e.target.value)}
+                  placeholder="Enter value"
+                  value={customTopLines}
+                  onChange={(e) => setCustomTopLines(e.target.value)}
                   className="w-24"
                   min="1"
-                  max="52"
                 />
               )}
             </div>
@@ -220,7 +253,7 @@ const Publishers = () => {
           )}
 
           <div className="bg-white rounded-lg shadow-md">
-            {numberOfWeeks === "none" ? (
+            {topLines === "none" ? (
               <div className="text-center py-12">
                 <p className="text-gray-500 text-lg mb-2">
                   Please select the number of weeks to load data
