@@ -59,7 +59,7 @@ const Publishers = () => {
       const params = new URLSearchParams({ top_lines: topLinesValue });
       if (accountName !== "none") params.set("account_name", accountName);
       if (bu !== "none") params.set("bu", bu);
-      const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?${params.toString()}`;
+      const apiUrl =`https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?top_lines=${topLinesValue}`;
 
       console.log(`Fetching Publishers data from: ${apiUrl}`);
 
