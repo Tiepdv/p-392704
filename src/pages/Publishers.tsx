@@ -167,7 +167,7 @@ const Publishers = () => {
       
       params.set("account_name", accountName);
       params.set("bu", bu);
-      params.set("show_lines", showLines ? "true" : "false");
+      params.set("show_lines", showLines.toString());
       
       const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?${params.toString()}`;
 
