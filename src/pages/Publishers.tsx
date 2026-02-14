@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import SearchToolbar from "@/components/SearchToolbar";
 import PaginatedDataTable from "@/components/PaginatedDataTable";
 import SheetTabsList from "@/components/SheetTabsList";
@@ -123,6 +124,7 @@ const Publishers = () => {
   const [customTopLines, setCustomTopLines] = useState<string>("");
   const [accountName, setAccountName] = useState<string>("all");
   const [bu, setBu] = useState<string>("all");
+  const [showLines, setShowLines] = useState<boolean>(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -144,7 +146,7 @@ const Publishers = () => {
     } else {
       setPublishersData({});
     }
-  }, [topLines, accountName, bu]);
+  }, [topLines, accountName, bu, showLines]);
 
   const handleCustomBlur = () => {
     if (customTopLines && customTopLines.trim() !== "") {
@@ -165,6 +167,7 @@ const Publishers = () => {
       
       params.set("account_name", accountName);
       params.set("bu", bu);
+      params.set("show_lines", showLines ? "true" : "false");
       
       const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?${params.toString()}`;
 
@@ -350,6 +353,15 @@ const Publishers = () => {
                   min="1"
                 />
               )}
+              <div className="flex items-center gap-1.5 ml-2">
+                <Switch
+                  id="show-lines"
+                  checked={showLines}
+                  onCheckedChange={setShowLines}
+                  className="scale-75"
+                />
+                <Label htmlFor="show-lines" className="text-white text-xs cursor-pointer">Show lines</Label>
+              </div>
             </div>
           </div>
         </div>
