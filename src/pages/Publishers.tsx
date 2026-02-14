@@ -293,36 +293,36 @@ const Publishers = () => {
       <div className="container mx-auto px-4 py-6 flex-grow">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-4xl font-bold text-white mb-2">Publishers</h1>
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <Label className="text-white text-sm">Account:</Label>
-              <Select value={accountName} onValueChange={setAccountName}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  {ACCOUNT_OPTIONS.map(opt => (
-                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center gap-2">
-              <Label className="text-white text-sm">BU:</Label>
-              <Select value={bu} onValueChange={setBu}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  {BU_OPTIONS.map(opt => (
-                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-1">
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <Label className="text-white text-sm">Account:</Label>
+                <Select value={accountName} onValueChange={setAccountName}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    {ACCOUNT_OPTIONS.map(opt => (
+                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <Label className="text-white text-sm">BU:</Label>
+                <Select value={bu} onValueChange={setBu}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    {BU_OPTIONS.map(opt => (
+                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex items-center gap-2">
                 <Label className="text-white text-sm">Top lines:</Label>
                 <Select value={topLines} onValueChange={handleTopLinesChange}>
@@ -355,15 +355,15 @@ const Publishers = () => {
                   />
                 )}
               </div>
-              <div className="flex items-center gap-1 self-end">
-                <Switch
-                  id="show-lines"
-                  checked={showLines}
-                  onCheckedChange={setShowLines}
-                  className="scale-[0.6]"
-                />
-                <Label htmlFor="show-lines" className="text-white text-[9px] cursor-pointer opacity-70 uppercase tracking-wider">SHOW LINES</Label>
-              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <Switch
+                id="show-lines"
+                checked={showLines}
+                onCheckedChange={setShowLines}
+                className="scale-[0.6]"
+              />
+              <Label htmlFor="show-lines" className="text-white text-[9px] cursor-pointer opacity-70 uppercase tracking-wider">SHOW LINES</Label>
             </div>
           </div>
         </div>
