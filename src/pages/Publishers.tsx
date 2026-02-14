@@ -322,45 +322,47 @@ const Publishers = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-center gap-2">
-              <Label className="text-white text-sm">Top lines:</Label>
-              <Select value={topLines} onValueChange={handleTopLinesChange}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="15">15</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                  <SelectItem value="100">100</SelectItem>
-                  <SelectItem value="150">150</SelectItem>
-                  <SelectItem value="200">200</SelectItem>
-                  <SelectItem value="300">300</SelectItem>
-                  <SelectItem value="custom">Custom</SelectItem>
-                </SelectContent>
-              </Select>
-              {topLines === "custom" && (
-                <Input
-                  type="number"
-                  placeholder="Enter value"
-                  value={customTopLines}
-                  onChange={(e) => setCustomTopLines(e.target.value)}
-                  onBlur={handleCustomBlur}
-                  className="w-24"
-                  min="1"
-                />
-              )}
-              <div className="flex items-center gap-1.5 ml-2">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <Label className="text-white text-sm">Top lines:</Label>
+                <Select value={topLines} onValueChange={handleTopLinesChange}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="15">15</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="30">30</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                    <SelectItem value="150">150</SelectItem>
+                    <SelectItem value="200">200</SelectItem>
+                    <SelectItem value="300">300</SelectItem>
+                    <SelectItem value="custom">Custom</SelectItem>
+                  </SelectContent>
+                </Select>
+                {topLines === "custom" && (
+                  <Input
+                    type="number"
+                    placeholder="Enter value"
+                    value={customTopLines}
+                    onChange={(e) => setCustomTopLines(e.target.value)}
+                    onBlur={handleCustomBlur}
+                    className="w-24"
+                    min="1"
+                  />
+                )}
+              </div>
+              <div className="flex items-center gap-1.5 self-end">
                 <Switch
                   id="show-lines"
                   checked={showLines}
                   onCheckedChange={setShowLines}
                   className="scale-75"
                 />
-                <Label htmlFor="show-lines" className="text-white text-xs cursor-pointer">Show lines</Label>
+                <Label htmlFor="show-lines" className="text-white text-[10px] cursor-pointer opacity-80 uppercase tracking-wider font-semibold">Show lines</Label>
               </div>
             </div>
           </div>
