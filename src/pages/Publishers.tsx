@@ -20,7 +20,9 @@ interface PublishersDataResponse {
     [region: string]: PublishersData[];
   };
 }
-
+const FORMAT_OPTIONS = [
+ 'OLV',
+ 'Display'];
 const ACCOUNT_OPTIONS = [
  'Adform-DE',
  'Adform-ES',
@@ -122,6 +124,7 @@ const Publishers = () => {
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
   const [topLines, setTopLines] = useState<string>("none");
   const [customTopLines, setCustomTopLines] = useState<string>("");
+  const [formatName, setFormatName] = useState<string>("all");
   const [accountName, setAccountName] = useState<string>("all");
   const [bu, setBu] = useState<string>("all");
   const [showLines, setShowLines] = useState<boolean>(false);
@@ -146,7 +149,7 @@ const Publishers = () => {
     } else {
       setPublishersData({});
     }
-  }, [topLines, accountName, bu, showLines]);
+  }, [topLines, accountName, bu, formatName, showLines]);
 
   const handleCustomBlur = () => {
     if (customTopLines && customTopLines.trim() !== "") {
@@ -164,7 +167,7 @@ const Publishers = () => {
       const params = new URLSearchParams({
         top_lines: topLinesValue
       });
-      
+      params.set("format_name", formatName);
       params.set("account_name", accountName);
       params.set("bu", bu);
       params.set("show_lines", showLines.toString());
@@ -295,6 +298,20 @@ const Publishers = () => {
           <h1 className="text-4xl font-bold text-white mb-2">Publishers</h1>
           <div className="flex flex-col items-end gap-1">
             <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                <Label className="text-white text-sm">Format:</Label>
+                <Select value={formatName} onValueChange={setFormatName}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    {FORMAT_OPTIONS.map(opt => (
+                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex items-center gap-2">
                 <Label className="text-white text-sm">Account:</Label>
                 <Select value={accountName} onValueChange={setAccountName}>
