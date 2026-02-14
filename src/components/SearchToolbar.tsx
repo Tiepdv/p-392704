@@ -207,7 +207,22 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
               </PopoverTrigger>
               <PopoverContent className="w-64" align="end">
                 <div className="space-y-2">
-                  <h3 className="font-medium">Show/Hide Columns</h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium">Show/Hide Columns</h3>
+                    <button
+                      onClick={() => {
+                        const allHidden = availableColumns.every(col => !visibleColumns.includes(col));
+                        if (allHidden) {
+                          onColumnVisibilityChange([...availableColumns]);
+                        } else {
+                          onColumnVisibilityChange([]);
+                        }
+                      }}
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {availableColumns.every(col => !visibleColumns.includes(col)) ? "Show all" : "Hide all"}
+                    </button>
+                  </div>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {availableColumns.map((column) => (
                       <div key={column} className="flex items-center space-x-2">
