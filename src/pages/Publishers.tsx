@@ -291,7 +291,7 @@ const Publishers = () => {
   return (
     <div className="flex flex-col min-h-screen bg-[#0f1429]">
       <div className="container mx-auto px-4 py-6 flex-grow">
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-4 mt-4 flex items-start justify-between">
           <h1 className="text-4xl font-bold text-white mb-2">Publishers</h1>
           <div className="flex flex-col items-end gap-1">
             <div className="flex items-center gap-6">
