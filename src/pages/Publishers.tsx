@@ -322,7 +322,7 @@ const Publishers = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <Label className="text-white text-sm">Top lines:</Label>
                 <Select value={topLines} onValueChange={handleTopLinesChange}>
@@ -355,14 +355,14 @@ const Publishers = () => {
                   />
                 )}
               </div>
-              <div className="flex items-center gap-1.5 self-end">
+              <div className="flex items-center gap-1 self-end">
                 <Switch
                   id="show-lines"
                   checked={showLines}
                   onCheckedChange={setShowLines}
-                  className="scale-75"
+                  className="scale-[0.6]"
                 />
-                <Label htmlFor="show-lines" className="text-white text-[10px] cursor-pointer opacity-80 uppercase tracking-wider font-semibold">Show lines</Label>
+                <Label htmlFor="show-lines" className="text-white text-[9px] cursor-pointer opacity-70 uppercase tracking-wider">SHOW LINES</Label>
               </div>
             </div>
           </div>
