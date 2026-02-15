@@ -26,6 +26,8 @@ const SheetViewer: React.FC<SheetViewerProps> = ({ onDataLoaded, tab = "market-l
     searchTerm,
     filteredData,
     activeFilters,
+    filterLogic,
+    setFilterLogic,
     setSelectedSheetTab,
     setSearchTerm,
     loadSheetData,
@@ -77,6 +79,8 @@ const SheetViewer: React.FC<SheetViewerProps> = ({ onDataLoaded, tab = "market-l
                 onColumnVisibilityChange={setVisibleColumns}
                 filteredData={filteredData}
                 onApplyFilters={handleApplyFilters}
+                filterLogic={filterLogic}
+                onFilterLogicChange={setFilterLogic}
                 sheetUrl={sheetUrl}
               />
 

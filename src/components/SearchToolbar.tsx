@@ -32,6 +32,8 @@ interface SearchToolbarProps {
   sheetUrl?: string;
   tab?: string;
   activeFilters?: Array<{column: string, operator: string, value: string}>;
+  filterLogic?: 'AND' | 'OR';
+  onFilterLogicChange?: (logic: 'AND' | 'OR') => void;
 }
 
 // Column name mapping for SH Sellers.json tab
@@ -66,7 +68,9 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
   onApplyFilters,
   sheetUrl,
   tab = "",
-  activeFilters = []
+  activeFilters = [],
+  filterLogic = 'AND',
+  onFilterLogicChange
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isColumnSelectorOpen, setIsColumnSelectorOpen] = useState(false);
@@ -191,6 +195,8 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
                   onApplyFilters={onApplyFilters}
                   currentFilters={activeFilters}
                   availableColumns={availableColumns}
+                  filterLogic={filterLogic}
+                  onFilterLogicChange={onFilterLogicChange}
                 />
               </PopoverContent>
             </Popover>

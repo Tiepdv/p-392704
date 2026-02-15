@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import SearchToolbar from "@/components/SearchToolbar";
 import PaginatedDataTable from "@/components/PaginatedDataTable";
 import SheetTabsList from "@/components/SheetTabsList";
+import { applyFiltersWithLogic } from "@/utils/filterUtils";
 
 interface PublishersData {
   [key: string]: any;
@@ -121,6 +122,7 @@ const Publishers = () => {
   const [activeTab, setActiveTab] = useState<string>("GLOBAL");
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilters, setActiveFilters] = useState<Array<{column: string, operator: string, value: string}>>([]);
+  const [filterLogic, setFilterLogic] = useState<'AND' | 'OR'>('AND');
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
   const [topLines, setTopLines] = useState<string>("none");
   const [customTopLines, setCustomTopLines] = useState<string>("");
@@ -214,42 +216,18 @@ const Publishers = () => {
     }
   };
 
-  const applyFilters = (data: any[]) => {
-    if (!activeFilters.length) return data;
-
-    return data.filter(item => {
-      return activeFilters.every(filter => {
-        const value = String(item[filter.column] || '').toLowerCase();
-        const filterValue = filter.value.toLowerCase();
-
-        switch(filter.operator) {
-          case 'equals':
-            return value === filterValue;
-          case 'not-equals':
-            return value !== filterValue;
-          case 'contains':
-            return value.includes(filterValue);
-          case 'greater-than':
-            return Number(value) > Number(filterValue);
-          case 'less-than':
-            return Number(value) < Number(filterValue);
-          default:
-            return true;
-        }
-      });
-    });
-  };
-
   const currentTabData = publishersData[activeTab] || [];
 
-  const filteredData = applyFilters(
+  const filteredData = applyFiltersWithLogic(
     searchTerm 
       ? currentTabData.filter(row => 
           Object.values(row).some(
             value => String(value).toLowerCase().includes(searchTerm.toLowerCase())
           )
         )
-      : currentTabData
+      : currentTabData,
+    activeFilters,
+    filterLogic
   );
 
   const handleRefresh = () => {
@@ -419,6 +397,8 @@ const Publishers = () => {
                   onApplyFilters={handleApplyFilters}
                   tab="publishers"
                   activeFilters={activeFilters}
+                  filterLogic={filterLogic}
+                  onFilterLogicChange={setFilterLogic}
                 />
 
                 {currentTabData.length > 0 ? (

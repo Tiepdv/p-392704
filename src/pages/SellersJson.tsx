@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import SearchToolbar from "@/components/SearchToolbar";
 import PaginatedDataTable from "@/components/PaginatedDataTable";
 import { supabase } from "@/integrations/supabase/client";
+import { applyFiltersWithLogic } from "@/utils/filterUtils";
 
 interface Seller {
   seller_id: string;
@@ -26,6 +27,7 @@ const SellersJson = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilters, setActiveFilters] = useState<Array<{column: string, operator: string, value: string}>>([]);
+  const [filterLogic, setFilterLogic] = useState<'AND' | 'OR'>('AND');
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
   const { toast } = useToast();
   
@@ -79,42 +81,17 @@ const SellersJson = () => {
     }
   };
 
-  // Apply filters to data
-  const applyFilters = (data: any[]) => {
-    if (!activeFilters.length) return data;
-    
-    return data.filter(item => {
-      return activeFilters.every(filter => {
-        const value = String(item[filter.column] || '').toLowerCase();
-        const filterValue = filter.value.toLowerCase();
-        
-        switch(filter.operator) {
-          case 'equals':
-            return value === filterValue;
-          case 'not-equals':
-            return value !== filterValue;
-          case 'contains':
-            return value.includes(filterValue);
-          case 'greater-than':
-            return Number(value) > Number(filterValue);
-          case 'less-than':
-            return Number(value) < Number(filterValue);
-          default:
-            return true;
-        }
-      });
-    });
-  };
-
   // Filter data based on search term and active filters
-  const filteredData = applyFilters(
+  const filteredData = applyFiltersWithLogic(
     searchTerm 
       ? sellersData.filter(row => 
           Object.values(row).some(
             value => String(value).toLowerCase().includes(searchTerm.toLowerCase())
           )
         )
-      : sellersData
+      : sellersData,
+    activeFilters,
+    filterLogic
   );
 
   const handleRefresh = () => {
@@ -151,6 +128,8 @@ const SellersJson = () => {
               sheetUrl={openJsonUrl} // Pass URL for the "Open Web" button
               tab="sellers-json"
               activeFilters={activeFilters}
+              filterLogic={filterLogic}
+              onFilterLogicChange={setFilterLogic}
             />
 
             {/* Data Table with Pagination and Sorting */}

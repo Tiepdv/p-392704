@@ -34,6 +34,8 @@ const Login = () => {
     searchTerm,
     filteredData,
     activeFilters,
+    filterLogic,
+    setFilterLogic,
     setSelectedSheetTab,
     setSearchTerm,
     loadSheetData,
@@ -88,6 +90,8 @@ const Login = () => {
               onApplyFilters={handleApplyFilters}
               sheetUrl={openSheetUrl} // Pass the correct URL for Market Lines
               activeFilters={activeFilters}
+              filterLogic={filterLogic}
+              onFilterLogicChange={setFilterLogic}
               tab="market-lines"
             />
 
