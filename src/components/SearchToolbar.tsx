@@ -70,6 +70,7 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isColumnSelectorOpen, setIsColumnSelectorOpen] = useState(false);
+  const [columnSearchTerm, setColumnSearchTerm] = useState("");
   const { isColumnVisible, loading } = useColumnVisibility(tab);
   const { isAdmin } = useAuth();
 
@@ -223,17 +224,28 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
                       {availableColumns.every(col => !visibleColumns.includes(col)) ? "Show all" : "Hide all"}
                     </button>
                   </div>
+                  <div className="relative">
+                    <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                    <Input
+                      placeholder="Search columns..."
+                      value={columnSearchTerm}
+                      onChange={(e) => setColumnSearchTerm(e.target.value)}
+                      className="pl-8 h-8 text-sm"
+                    />
+                  </div>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
-                    {availableColumns.map((column) => (
+                    {availableColumns
+                      .filter(column => getColumnDisplayName(column, tab).toLowerCase().includes(columnSearchTerm.toLowerCase()))
+                      .map((column) => (
                       <div key={column} className="flex items-center space-x-2">
                         <button
                           onClick={() => handleColumnToggle(column)}
-                          className="flex items-center space-x-2 text-sm hover:bg-gray-100 w-full p-1 rounded"
+                          className="flex items-center space-x-2 text-sm hover:bg-muted w-full p-1 rounded"
                         >
                           {visibleColumns.includes(column) ? (
                             <Eye className="h-4 w-4 text-green-600" />
                           ) : (
-                            <EyeOff className="h-4 w-4 text-gray-400" />
+                            <EyeOff className="h-4 w-4 text-muted-foreground" />
                           )}
                           <span className="truncate">{getColumnDisplayName(column, tab)}</span>
                         </button>
