@@ -26,6 +26,8 @@ interface FilterPopoverProps {
   onApplyFilters?: (filters: Array<{column: string, operator: string, value: string}>) => void;
   currentFilters?: Array<{column: string, operator: string, value: string}>;
   availableColumns?: string[];
+  filterLogic?: 'AND' | 'OR';
+  onFilterLogicChange?: (logic: 'AND' | 'OR') => void;
 }
 
 // Define operators with their display values and icons
@@ -43,7 +45,9 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
   setIsOpen,
   onApplyFilters,
   currentFilters = [],
-  availableColumns
+  availableColumns,
+  filterLogic = 'AND',
+  onFilterLogicChange
 }) => {
   const [selectedColumn, setSelectedColumn] = useState<string>("");
   const [selectedOperator, setSelectedOperator] = useState<string>("equals");
@@ -184,6 +188,37 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
         </div>
       </div>
 
+      {currentFilters.length > 0 && onFilterLogicChange && (
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium">Logic:</span>
+          <div className="flex rounded-md border overflow-hidden">
+            <button
+              type="button"
+              onClick={() => onFilterLogicChange('AND')}
+              className={`px-3 py-1 text-xs font-medium transition-colors ${
+                filterLogic === 'AND'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:bg-accent'
+              }`}
+            >
+              AND
+            </button>
+            <button
+              type="button"
+              onClick={() => onFilterLogicChange('OR')}
+              className={`px-3 py-1 text-xs font-medium transition-colors ${
+                filterLogic === 'OR'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:bg-accent'
+              }`}
+            >
+              OR
+            </button>
+          </div>
+        </div>
+      )}
+
+
       {currentFilters.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -200,7 +235,7 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
           </div>
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {currentFilters.map((filter, index) => (
-              <div key={index} className="flex items-center gap-2 bg-gray-100 p-2 rounded">
+              <div key={index} className="flex items-center gap-2 bg-muted p-2 rounded">
                 <div className="flex-1 text-sm">
                   <span className="font-medium">{getDisplayName(filter.column)}</span>
                   <span className="mx-1 flex items-center gap-1 inline-flex">
