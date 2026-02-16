@@ -292,17 +292,22 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-sm text-gray-600 font-medium">Active filters:</span>
             {activeFilters.map((filter, index) => (
-              <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                <span className="text-xs">
-                  {getColumnDisplayName(filter.column, tab)} {filter.operator} "{filter.value}"
-                </span>
-                <button
-                  onClick={() => handleRemoveFilter(index)}
-                  className="ml-1 hover:bg-gray-300 rounded-full p-0.5"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
+              <React.Fragment key={index}>
+                {index > 0 && (
+                  <span className="text-xs font-semibold text-primary px-1">{filterLogic}</span>
+                )}
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <span className="text-xs">
+                    {getColumnDisplayName(filter.column, tab)} {filter.operator} "{filter.value}"
+                  </span>
+                  <button
+                    onClick={() => handleRemoveFilter(index)}
+                    className="ml-1 hover:bg-gray-300 rounded-full p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              </React.Fragment>
             ))}
             <Button
               variant="ghost"
