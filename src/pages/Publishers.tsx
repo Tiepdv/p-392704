@@ -128,7 +128,7 @@ const Publishers = () => {
   const [topLines, setTopLines] = useState<string>("none");
   const [customTopLines, setCustomTopLines] = useState<string>("");
   const [formatName, setFormatName] = useState<string>("all");
-  const [marketName, setMarketName] = useState<string>("supply");
+  const [marketName, setMarketName] = useState<string>("Supply");
   const [accountName, setAccountName] = useState<string>("all");
   const [bu, setBu] = useState<string>("all");
   const [showLines, setShowLines] = useState<boolean>(false);
@@ -285,7 +285,7 @@ const Publishers = () => {
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="supply">Supply</SelectItem>
+                    <SelectItem value="Supply">Supply</SelectItem>
                     {MARKET_OPTIONS.map(opt => (
                       <SelectItem key={opt} value={opt}>{opt}</SelectItem>
                     ))}
