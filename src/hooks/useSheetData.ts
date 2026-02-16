@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { fetchPublicSheetData, parseSheetId } from "@/utils/googleApi";
 import { transformSheetData } from "@/utils/sheetTransform";
-import { applyFiltersWithLogic } from "@/utils/filterUtils";
+import { applyFiltersWithLogic, FilterItem } from "@/utils/filterUtils";
 import { useToast } from "@/components/ui/use-toast";
 
 export const useSheetData = (sheetUrl: string, initialTabName: string = "") => {
@@ -11,8 +11,7 @@ export const useSheetData = (sheetUrl: string, initialTabName: string = "") => {
   const [selectedSheetTab, setSelectedSheetTab] = useState(initialTabName);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilters, setActiveFilters] = useState<Array<{column: string, operator: string, value: string}>>([]);
-  const [filterLogic, setFilterLogic] = useState<'AND' | 'OR'>('AND');
+  const [activeFilters, setActiveFilters] = useState<FilterItem[]>([]);
   const { toast } = useToast();
   
   // Load sheet tabs on initial render
@@ -130,12 +129,11 @@ export const useSheetData = (sheetUrl: string, initialTabName: string = "") => {
           )
         )
       : sheetData,
-    activeFilters,
-    filterLogic
+    activeFilters
   );
 
   // Handle applying new filters
-  const handleApplyFilters = (filters: Array<{column: string, operator: string, value: string}>) => {
+  const handleApplyFilters = (filters: FilterItem[]) => {
     setActiveFilters(filters);
   };
 
@@ -147,8 +145,6 @@ export const useSheetData = (sheetUrl: string, initialTabName: string = "") => {
     searchTerm,
     filteredData,
     activeFilters,
-    filterLogic,
-    setFilterLogic,
     setSelectedSheetTab,
     setSearchTerm,
     loadSheetData,

@@ -121,8 +121,7 @@ const Publishers = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("GLOBAL");
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilters, setActiveFilters] = useState<Array<{column: string, operator: string, value: string}>>([]);
-  const [filterLogic, setFilterLogic] = useState<'AND' | 'OR'>('AND');
+  const [activeFilters, setActiveFilters] = useState<Array<{column: string, operator: string, value: string, logic?: 'AND' | 'OR'}>>([]);
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
   const [topLines, setTopLines] = useState<string>("none");
   const [customTopLines, setCustomTopLines] = useState<string>("");
@@ -226,8 +225,7 @@ const Publishers = () => {
           )
         )
       : currentTabData,
-    activeFilters,
-    filterLogic
+    activeFilters
   );
 
   const handleRefresh = () => {
@@ -396,9 +394,7 @@ const Publishers = () => {
                   filteredData={filteredData}
                   onApplyFilters={handleApplyFilters}
                   tab="publishers"
-                  activeFilters={activeFilters}
-                  filterLogic={filterLogic}
-                  onFilterLogicChange={setFilterLogic}
+                   activeFilters={activeFilters}
                 />
 
                 {currentTabData.length > 0 ? (

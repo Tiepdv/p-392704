@@ -26,8 +26,7 @@ const SellersJson = () => {
   const [sellersData, setSellersData] = useState<Seller[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilters, setActiveFilters] = useState<Array<{column: string, operator: string, value: string}>>([]);
-  const [filterLogic, setFilterLogic] = useState<'AND' | 'OR'>('AND');
+  const [activeFilters, setActiveFilters] = useState<Array<{column: string, operator: string, value: string, logic?: 'AND' | 'OR'}>>([]);
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
   const { toast } = useToast();
   
@@ -90,8 +89,7 @@ const SellersJson = () => {
           )
         )
       : sellersData,
-    activeFilters,
-    filterLogic
+    activeFilters
   );
 
   const handleRefresh = () => {
@@ -127,9 +125,7 @@ const SellersJson = () => {
               onApplyFilters={handleApplyFilters}
               sheetUrl={openJsonUrl} // Pass URL for the "Open Web" button
               tab="sellers-json"
-              activeFilters={activeFilters}
-              filterLogic={filterLogic}
-              onFilterLogicChange={setFilterLogic}
+               activeFilters={activeFilters}
             />
 
             {/* Data Table with Pagination and Sorting */}

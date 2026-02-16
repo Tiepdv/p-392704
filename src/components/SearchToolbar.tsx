@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import FilterPopover from "./FilterPopover";
 import { getDisplayName } from "@/utils/columnNameMapping";
+import { FilterItem } from "@/utils/filterUtils";
 import { useColumnVisibility } from "@/hooks/useColumnVisibility";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -28,10 +29,11 @@ interface SearchToolbarProps {
   visibleColumns: string[];
   onColumnVisibilityChange: (columns: string[]) => void;
   filteredData: any[];
-  onApplyFilters: (filters: Array<{column: string, operator: string, value: string}>) => void;
+  onApplyFilters: (filters: FilterItem[]) => void;
   sheetUrl?: string;
   tab?: string;
-  activeFilters?: Array<{column: string, operator: string, value: string}>;
+  activeFilters?: FilterItem[];
+  // Keep these for backward compat but they are ignored
   filterLogic?: 'AND' | 'OR';
   onFilterLogicChange?: (logic: 'AND' | 'OR') => void;
 }
@@ -69,8 +71,6 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
   sheetUrl,
   tab = "",
   activeFilters = [],
-  filterLogic = 'AND',
-  onFilterLogicChange
 }) => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isColumnSelectorOpen, setIsColumnSelectorOpen] = useState(false);
@@ -80,8 +80,6 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
 
   console.log("SearchToolbar - tab:", tab, "columns:", columns, "loading:", loading);
 
-  // Filter columns based on role permissions - only show columns that are visible to the current user's role
-  // Wait for the loading to complete before filtering
   const availableColumns = loading ? columns : columns.filter(column => {
     const visible = isColumnVisible(column);
     console.log(`Column ${column} visibility:`, visible);
@@ -90,7 +88,6 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
 
   console.log("Available columns after filtering:", availableColumns);
 
-  // Get the actual visible columns for export (intersection of visibleColumns and role-permitted columns)
   const exportColumns = loading ? visibleColumns : visibleColumns.filter(column => isColumnVisible(column));
 
   const handleColumnToggle = (column: string) => {
@@ -104,14 +101,12 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
   const exportToCSV = () => {
     if (filteredData.length === 0) return;
 
-    // Use only the columns that are visible in the current view
     const headers = exportColumns.map(col => getColumnDisplayName(col, tab)).join(',');
     const csvContent = [
       headers,
       ...filteredData.map(row => 
         exportColumns.map(col => {
           const value = row[col];
-          // Escape quotes and wrap in quotes if contains comma, quote, or newline
           if (value && (value.toString().includes(',') || value.toString().includes('"') || value.toString().includes('\n'))) {
             return `"${value.toString().replace(/"/g, '""')}"`;
           }
@@ -134,6 +129,9 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
   const handleRemoveFilter = (index: number) => {
     const newFilters = [...activeFilters];
     newFilters.splice(index, 1);
+    if (newFilters.length > 0 && newFilters[0].logic) {
+      newFilters[0] = { ...newFilters[0], logic: undefined };
+    }
     onApplyFilters(newFilters);
   };
 
@@ -145,12 +143,12 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
   const shouldShowOpenSheet = tab !== "explore" && isAdmin;
 
   return (
-    <div className="p-4 border-b bg-gray-50">
+    <div className="p-4 border-b bg-muted/50">
       <div className="flex flex-col gap-4">
         {/* Search and Actions Row */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Search data..."
               value={searchTerm}
@@ -195,8 +193,6 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
                   onApplyFilters={onApplyFilters}
                   currentFilters={activeFilters}
                   availableColumns={availableColumns}
-                  filterLogic={filterLogic}
-                  onFilterLogicChange={onFilterLogicChange}
                 />
               </PopoverContent>
             </Popover>
@@ -290,11 +286,11 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
         {/* Active Filters Row */}
         {activeFilters.length > 0 && (
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm text-gray-600 font-medium">Active filters:</span>
+            <span className="text-sm text-muted-foreground font-medium">Active filters:</span>
             {activeFilters.map((filter, index) => (
               <React.Fragment key={index}>
                 {index > 0 && (
-                  <span className="text-xs font-semibold text-primary px-1">{filterLogic}</span>
+                  <span className="text-xs font-semibold text-primary px-1">{filter.logic || 'AND'}</span>
                 )}
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <span className="text-xs">
@@ -302,7 +298,7 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
                   </span>
                   <button
                     onClick={() => handleRemoveFilter(index)}
-                    className="ml-1 hover:bg-gray-300 rounded-full p-0.5"
+                    className="ml-1 hover:bg-accent rounded-full p-0.5"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -321,7 +317,7 @@ const SearchToolbar: React.FC<SearchToolbarProps> = ({
         )}
 
         {/* Results Summary */}
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-muted-foreground">
           {data.length > 0 && (
             <span>
               Showing {filteredData.length} of {data.length} records

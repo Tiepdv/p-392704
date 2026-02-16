@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getDisplayName } from "@/utils/columnNameMapping";
+import { FilterItem } from "@/utils/filterUtils";
 import { 
   EqualIcon,
   Ban, 
@@ -23,11 +24,9 @@ interface FilterPopoverProps {
   data: any[];
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  onApplyFilters?: (filters: Array<{column: string, operator: string, value: string}>) => void;
-  currentFilters?: Array<{column: string, operator: string, value: string}>;
+  onApplyFilters?: (filters: FilterItem[]) => void;
+  currentFilters?: FilterItem[];
   availableColumns?: string[];
-  filterLogic?: 'AND' | 'OR';
-  onFilterLogicChange?: (logic: 'AND' | 'OR') => void;
 }
 
 // Define operators with their display values and icons
@@ -46,8 +45,6 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
   onApplyFilters,
   currentFilters = [],
   availableColumns,
-  filterLogic = 'AND',
-  onFilterLogicChange
 }) => {
   const [selectedColumn, setSelectedColumn] = useState<string>("");
   const [selectedOperator, setSelectedOperator] = useState<string>("equals");
@@ -65,12 +62,13 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
 
   const handleAddFilter = () => {
     if (selectedColumn && filterValue) {
-      const newFilters = [...currentFilters, { 
+      const newFilter: FilterItem = { 
         column: selectedColumn, 
         operator: selectedOperator, 
-        value: filterValue 
-      }];
-      // Apply the new filters immediately
+        value: filterValue,
+        logic: currentFilters.length > 0 ? 'AND' : undefined,
+      };
+      const newFilters = [...currentFilters, newFilter];
       if (onApplyFilters) {
         onApplyFilters(newFilters);
       }
@@ -81,21 +79,34 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
   const handleRemoveFilter = (index: number) => {
     const newFilters = [...currentFilters];
     newFilters.splice(index, 1);
-    // Apply the updated filters immediately
+    // Fix first filter: it should have no logic connector
+    if (newFilters.length > 0 && newFilters[0].logic) {
+      newFilters[0] = { ...newFilters[0], logic: undefined };
+    }
+    if (onApplyFilters) {
+      onApplyFilters(newFilters);
+    }
+  };
+
+  const handleToggleFilterLogic = (index: number) => {
+    if (index === 0) return; // First filter has no connector
+    const newFilters = [...currentFilters];
+    newFilters[index] = {
+      ...newFilters[index],
+      logic: newFilters[index].logic === 'OR' ? 'AND' : 'OR',
+    };
     if (onApplyFilters) {
       onApplyFilters(newFilters);
     }
   };
 
   const handleClearAllFilters = () => {
-    // Apply empty filters to reset the table
     if (onApplyFilters) {
       onApplyFilters([]);
     }
   };
 
   const handleApplyFilters = () => {
-    // Close the popover after applying
     setIsOpen(false);
   };
 
@@ -109,7 +120,6 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
     return found ? found.label : operator;
   };
 
-  // Handle Enter key press in the filter value input
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && selectedColumn && filterValue) {
       handleAddFilter();
@@ -188,37 +198,6 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
         </div>
       </div>
 
-      {currentFilters.length > 0 && onFilterLogicChange && (
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium">Logic:</span>
-          <div className="flex rounded-md border overflow-hidden">
-            <button
-              type="button"
-              onClick={() => onFilterLogicChange('AND')}
-              className={`px-3 py-1 text-xs font-medium transition-colors ${
-                filterLogic === 'AND'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:bg-accent'
-              }`}
-            >
-              AND
-            </button>
-            <button
-              type="button"
-              onClick={() => onFilterLogicChange('OR')}
-              className={`px-3 py-1 text-xs font-medium transition-colors ${
-                filterLogic === 'OR'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:bg-accent'
-              }`}
-            >
-              OR
-            </button>
-          </div>
-        </div>
-      )}
-
-
       {currentFilters.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -233,12 +212,18 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
               Clear All
             </Button>
           </div>
-          <div className="space-y-2 max-h-48 overflow-y-auto">
+          <div className="space-y-1 max-h-48 overflow-y-auto">
             {currentFilters.map((filter, index) => (
               <React.Fragment key={index}>
                 {index > 0 && (
                   <div className="flex justify-center">
-                    <span className="text-xs font-semibold text-primary">{filterLogic}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleFilterLogic(index)}
+                      className="text-xs font-semibold text-primary hover:text-primary/80 px-2 py-0.5 rounded border border-primary/30 hover:bg-primary/10 transition-colors cursor-pointer"
+                    >
+                      {filter.logic || 'AND'}
+                    </button>
                   </div>
                 )}
                 <div className="flex items-center gap-2 bg-muted p-2 rounded">
