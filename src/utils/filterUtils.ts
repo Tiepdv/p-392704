@@ -1,5 +1,12 @@
 
-export const matchFilter = (item: any, filter: { column: string; operator: string; value: string }) => {
+export interface FilterItem {
+  column: string;
+  operator: string;
+  value: string;
+  logic?: 'AND' | 'OR'; // How this filter connects to the previous one
+}
+
+export const matchFilter = (item: any, filter: FilterItem) => {
   const value = String(item[filter.column] || '').toLowerCase();
   const filterValue = filter.value.toLowerCase();
   switch (filter.operator) {
@@ -14,15 +21,22 @@ export const matchFilter = (item: any, filter: { column: string; operator: strin
 
 export const applyFiltersWithLogic = (
   data: any[],
-  filters: Array<{ column: string; operator: string; value: string }>,
-  logic: 'AND' | 'OR' = 'AND'
+  filters: FilterItem[],
+  _logic?: 'AND' | 'OR' // kept for backward compat, ignored
 ) => {
   if (!filters.length) return data;
   return data.filter(item => {
-    if (logic === 'AND') {
-      return filters.every(filter => matchFilter(item, filter));
-    } else {
-      return filters.some(filter => matchFilter(item, filter));
+    // Evaluate left-to-right with per-filter logic connectors
+    let result = matchFilter(item, filters[0]);
+    for (let i = 1; i < filters.length; i++) {
+      const connector = filters[i].logic || 'AND';
+      const current = matchFilter(item, filters[i]);
+      if (connector === 'AND') {
+        result = result && current;
+      } else {
+        result = result || current;
+      }
     }
+    return result;
   });
 };

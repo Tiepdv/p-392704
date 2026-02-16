@@ -27,8 +27,7 @@ const Explore = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("GLOBAL");
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilters, setActiveFilters] = useState<Array<{column: string, operator: string, value: string}>>([]);
-  const [filterLogic, setFilterLogic] = useState<'AND' | 'OR'>('AND');
+  const [activeFilters, setActiveFilters] = useState<Array<{column: string, operator: string, value: string, logic?: 'AND' | 'OR'}>>([]);
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
   const [numberOfWeeks, setNumberOfWeeks] = useState<string>("none");
   const [customWeeks, setCustomWeeks] = useState<string>("");
@@ -116,8 +115,7 @@ const Explore = () => {
           )
         )
       : currentTabData,
-    activeFilters,
-    filterLogic
+    activeFilters
   );
 
   const handleRefresh = () => {
@@ -234,9 +232,7 @@ const Explore = () => {
                   filteredData={filteredData}
                   onApplyFilters={handleApplyFilters}
                   tab="explore"
-                  activeFilters={activeFilters}
-                  filterLogic={filterLogic}
-                  onFilterLogicChange={setFilterLogic}
+                   activeFilters={activeFilters}
                 />
 
                 {currentTabData.length > 0 ? (
