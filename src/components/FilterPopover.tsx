@@ -235,24 +235,31 @@ const FilterPopover: React.FC<FilterPopoverProps> = ({
           </div>
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {currentFilters.map((filter, index) => (
-              <div key={index} className="flex items-center gap-2 bg-muted p-2 rounded">
-                <div className="flex-1 text-sm">
-                  <span className="font-medium">{getDisplayName(filter.column)}</span>
-                  <span className="mx-1 flex items-center gap-1 inline-flex">
-                    {getOperatorIcon(filter.operator)}
-                    <span className="text-xs">{getOperatorLabel(filter.operator)}</span>
-                  </span>
-                  <span className="font-medium">"{filter.value}"</span>
+              <React.Fragment key={index}>
+                {index > 0 && (
+                  <div className="flex justify-center">
+                    <span className="text-xs font-semibold text-primary">{filterLogic}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 bg-muted p-2 rounded">
+                  <div className="flex-1 text-sm">
+                    <span className="font-medium">{getDisplayName(filter.column)}</span>
+                    <span className="mx-1 flex items-center gap-1 inline-flex">
+                      {getOperatorIcon(filter.operator)}
+                      <span className="text-xs">{getOperatorLabel(filter.operator)}</span>
+                    </span>
+                    <span className="font-medium">"{filter.value}"</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0"
+                    onClick={() => handleRemoveFilter(index)}
+                  >
+                    ×
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0"
-                  onClick={() => handleRemoveFilter(index)}
-                >
-                  ×
-                </Button>
-              </div>
+              </React.Fragment>
             ))}
           </div>
           <Button className="w-full" onClick={handleApplyFilters}>
