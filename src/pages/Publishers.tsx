@@ -25,7 +25,6 @@ const FORMAT_OPTIONS = [
  'OLV',
  'Display'];
 const MARKET_OPTIONS = [
- 'Supply',
  'Demand'];
 const ACCOUNT_OPTIONS = [
  'Adform-DE',
