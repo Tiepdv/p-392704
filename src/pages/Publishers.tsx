@@ -164,6 +164,7 @@ const Publishers = () => {
   const fetchPublishersData = async () => {
     try {
       setIsLoading(true);
+      setPublishersData({});
 
       const topLinesValue = getTopLinesValue();
   
