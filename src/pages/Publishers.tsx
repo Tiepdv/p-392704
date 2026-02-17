@@ -391,7 +391,7 @@ const Publishers = () => {
                   }
                 }}
                 className={cn(
-                  "h-7 w-7 rounded-full",
+                  "h-5 w-5 min-w-5 rounded-full p-0",
                   isPaused
                     ? "bg-green-600/80 hover:bg-green-500 text-white"
                     : "bg-yellow-600/80 hover:bg-yellow-500 text-white"
