@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Play, Pause } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -133,6 +135,7 @@ const Publishers = () => {
   const [bu, setBu] = useState<string>("all");
   const [showLines, setShowLines] = useState<boolean>(false);
   const [onlyDomain, setOnlyDomain] = useState<boolean>(false);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -146,6 +149,7 @@ const Publishers = () => {
   
 
   useEffect(() => {
+    if (isPaused) return;
     if (topLines === "custom") {
       // Custom input is handled by onBlur, not here
       return;
@@ -370,6 +374,36 @@ const Publishers = () => {
               </div>
             </div>
             <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  if (isPaused) {
+                    setIsPaused(false);
+                    // Trigger fetch on resume
+                    if (topLines !== "none" && topLines !== "custom") {
+                      fetchPublishersData();
+                    } else if (topLines === "custom" && customTopLines && customTopLines.trim() !== "") {
+                      fetchPublishersData();
+                    }
+                  } else {
+                    setIsPaused(true);
+                  }
+                }}
+                className={cn(
+                  "h-7 w-7 rounded-full",
+                  isPaused
+                    ? "bg-green-600/80 hover:bg-green-500 text-white"
+                    : "bg-yellow-600/80 hover:bg-yellow-500 text-white"
+                )}
+                title={isPaused ? "Resume auto-fetch" : "Pause auto-fetch"}
+              >
+                {isPaused ? (
+                  <Play className="h-3.5 w-3.5" />
+                ) : (
+                  <Pause className="h-3.5 w-3.5" />
+                )}
+              </Button>
               <div className="flex items-center gap-1">
                 <Switch
                   id="only-domain"
