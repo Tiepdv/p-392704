@@ -132,6 +132,7 @@ const Publishers = () => {
   const [accountName, setAccountName] = useState<string>("all");
   const [bu, setBu] = useState<string>("all");
   const [showLines, setShowLines] = useState<boolean>(false);
+  const [onlyDomain, setOnlyDomain] = useState<boolean>(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -153,7 +154,7 @@ const Publishers = () => {
     } else {
       setPublishersData({});
     }
-  }, [topLines, accountName, bu, formatName,marketName, showLines]);
+  }, [topLines, accountName, bu, formatName,marketName, showLines, onlyDomain]);
 
   const handleCustomBlur = () => {
     if (customTopLines && customTopLines.trim() !== "") {
@@ -177,7 +178,7 @@ const Publishers = () => {
       params.set("account_name", accountName);
       params.set("bu", bu);
       params.set("show_lines", showLines.toString());
-      
+      params.set("only_domain", onlyDomain.toString());
       const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?${params.toString()}`;
 
       console.log(`Fetching Publishers data from: ${apiUrl}`);
@@ -368,14 +369,25 @@ const Publishers = () => {
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-1">
-              <Switch
-                id="show-lines"
-                checked={showLines}
-                onCheckedChange={setShowLines}
-                className="scale-[0.6]"
-              />
-              <Label htmlFor="show-lines" className="text-white text-[9px] cursor-pointer opacity-70 uppercase tracking-wider">SHOW LINES</Label>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1">
+                <Switch
+                  id="only-domain"
+                  checked={onlyDomain}
+                  onCheckedChange={setOnlyDomain}
+                  className="scale-[0.6]"
+                />
+                <Label htmlFor="only-domain" className="text-white text-[9px] cursor-pointer opacity-70 uppercase tracking-wider">ONLY DOMAIN</Label>
+              </div>
+              <div className="flex items-center gap-1">
+                <Switch
+                  id="show-lines"
+                  checked={showLines}
+                  onCheckedChange={setShowLines}
+                  className="scale-[0.6]"
+                />
+                <Label htmlFor="show-lines" className="text-white text-[9px] cursor-pointer opacity-70 uppercase tracking-wider">SHOW LINES</Label>
+              </div>
             </div>
           </div>
         </div>
