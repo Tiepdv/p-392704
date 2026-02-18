@@ -396,7 +396,7 @@ const Publishers = () => {
                     ? "bg-green-600/80 hover:bg-green-500 text-white"
                     : "bg-yellow-600/80 hover:bg-yellow-500 text-white"
                 )}
-                title={isPaused ? "Resume auto-fetch" : "Pause auto-fetch"}
+                title={isPaused ? "Resume auto-fetch" : "Pause/Play"}
               >
                 {isPaused ? (
                   <Play className="h-3.5 w-3.5" />
