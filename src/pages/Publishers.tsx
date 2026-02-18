@@ -183,7 +183,7 @@ const Publishers = () => {
       params.set("bu", bu);
       params.set("show_lines", showLines.toString());
       params.set("only_domain", onlyDomain.toString());
-      const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/adstxt_all_markets?${params.toString()}`;
+      const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2?${params.toString()}`;
 
       console.log(`Fetching Publishers data from: ${apiUrl}`);
 
