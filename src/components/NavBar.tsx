@@ -68,7 +68,7 @@ const NavBar = () => {
                 </Button>
               </Link>
             )}
-            {isTabVisible('publishers') && (
+            {isTabVisible('publishers') &&  false && (
               <Link to="/publishers">
                 <Button 
                   variant={isActive("/publishers") ? "default" : "ghost"}
