@@ -161,15 +161,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       await supabase.auth.signOut();
+    } catch (error) {
+      console.error("Sign out error:", error);
+    } finally {
+      // Always clear local state, even if server-side signout fails
+      setSession(null);
+      setUser(null);
+      setProfile(null);
+      setIsLoading(false);
       toast({
         title: "Logged out",
         description: "You have been successfully logged out.",
       });
       navigate("/login");
-    } catch (error) {
-      console.error("Sign out error:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
