@@ -36,7 +36,7 @@ const Login = () => {
     Display: "https://docs.google.com/spreadsheets/d/1z2NQ13FS_eVrgRd-b49_tsGKtemXpi1v/edit?pli=1&gid=1104687448#gid=1104687448",
     OLV_CTV: "https://docs.google.com/spreadsheets/d/1z2NQ13FS_eVrgRd-b49_tsGKtemXpi1v/edit?pli=1&gid=1104687448#gid=1104687448",
     OLV_Display: "https://docs.google.com/spreadsheets/d/1z2NQ13FS_eVrgRd-b49_tsGKtemXpi1v/edit?pli=1&gid=1104687448#gid=1104687448",
-    CTV_Display: "https://docs.google.com/spreadsheets/d/1z2NQ13FS_eVrgRd-b49_tsGKtemXpi1v/edit?pli=1&gid=1104687448#gid=1104687448",
+    CTV_Display: "https://docs.google.com/spreadsheets/d/1otlf6RDF0hulh9XAQEWP-q1RSePcO3r6/edit?gid=1099918181#gid=1099918181",
   };
 
   const sheetUrl = sheetUrlMap[format] || sheetUrlMap.All;
