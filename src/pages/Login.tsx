@@ -8,6 +8,7 @@ import SearchToolbar from "@/components/SearchToolbar";
 import PaginatedDataTable from "@/components/PaginatedDataTable";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 const Login = () => {
   const { user, profile } = useAuth();
@@ -23,11 +24,21 @@ const Login = () => {
     );
   }
 
-  // Google Sheet URL from the user's request
-  const sheetUrl = "https://docs.google.com/spreadsheets/d/1z2NQ13FS_eVrgRd-b49_tsGKtemXpi1v/edit?gid=916740284#gid=916740284";
-  // Google Sheet URL for the Open Sheet button
-  const openSheetUrl = "https://docs.google.com/spreadsheets/d/1z2NQ13FS_eVrgRd-b49_tsGKtemXpi1v/";
-  
+  // Format filter parameter
+  const [format, setFormat] = useState<string>("All");
+  const [customFormat, setCustomFormat] = useState<string>("");
+
+  // Map format value to corresponding Google Sheet URL
+  const sheetUrlMap: Record<string, string> = {
+    All: "https://docs.google.com/spreadsheets/d/1z2NQ13FS_eVrgRd-b49_tsGKtemXpi1v/edit?pli=1&gid=1104687448#gid=1104687448",
+    OLV: "https://docs.google.com/spreadsheets/d/1ivqIrtJ4cBe0565W-V3vNKWHx4KXwMrr/edit?gid=1104687448#gid=1104687448",
+    CTV: "https://docs.google.com/spreadsheets/d/1ivqIrtJ4cBe0565W-V3vNKWHx4KXwMrr/edit?gid=1104687448#gid=1104687448",
+    Display: "https://docs.google.com/spreadsheets/d/1ivqIrtJ4cBe0565W-V3vNKWHx4KXwMrr/edit?gid=1104687448#gid=1104687448",
+  };
+
+  const sheetUrl = sheetUrlMap[format] || sheetUrlMap.All;
+  const openSheetUrl = sheetUrl;
+
   const {
     sheetData,
     sheetTabs,
@@ -41,12 +52,20 @@ const Login = () => {
     loadSheetData,
     handleApplyFilters
   } = useSheetData(sheetUrl);
-  
+
   // State for column visibility
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
 
-  // Format filter parameter
-  const [format, setFormat] = useState<string>("All");
+  // Helper similar to Explore: returns the format value for backend usage
+  const getFormatValue = () => {
+    if (format === "Custom") {
+      return customFormat;
+    }
+    return format;
+  };
+  // Example usage (mirrors Explore tab):
+  // const formatvalue = getFormatValue();
+  // const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2-2?format=${formatvalue}`;
 
   // Initialize visible columns when data changes
   React.useEffect(() => {
@@ -71,18 +90,29 @@ const Login = () => {
             <Label htmlFor="format-select" className="text-white text-sm">
               Format:
             </Label>
-            <Select value={format} onValueChange={setFormat}>
-              <SelectTrigger className="w-32" id="format-select">
-                <SelectValue placeholder="Select format" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All</SelectItem>
-                <SelectItem value="OLV">OLV</SelectItem>
-                <SelectItem value="CTV">CTV</SelectItem>
-                <SelectItem value="Display">Display</SelectItem>
-                <SelectItem value="Custom">Custom</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Select value={format} onValueChange={setFormat}>
+                <SelectTrigger className="w-32" id="format-select">
+                  <SelectValue placeholder="Select format" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All</SelectItem>
+                  <SelectItem value="OLV">OLV</SelectItem>
+                  <SelectItem value="CTV">CTV</SelectItem>
+                  <SelectItem value="Display">Display</SelectItem>
+                  <SelectItem value="Custom">Custom</SelectItem>
+                </SelectContent>
+              </Select>
+              {format === "Custom" && (
+                <Input
+                  type="text"
+                  placeholder="Enter format"
+                  value={customFormat}
+                  onChange={(e) => setCustomFormat(e.target.value)}
+                  className="w-32"
+                />
+              )}
+            </div>
           </div>
         </div>
 
