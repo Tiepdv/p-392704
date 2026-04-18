@@ -90,18 +90,29 @@ const Login = () => {
             <Label htmlFor="format-select" className="text-white text-sm">
               Format:
             </Label>
-            <Select value={format} onValueChange={setFormat}>
-              <SelectTrigger className="w-32" id="format-select">
-                <SelectValue placeholder="Select format" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All</SelectItem>
-                <SelectItem value="OLV">OLV</SelectItem>
-                <SelectItem value="CTV">CTV</SelectItem>
-                <SelectItem value="Display">Display</SelectItem>
-                <SelectItem value="Custom">Custom</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Select value={format} onValueChange={setFormat}>
+                <SelectTrigger className="w-32" id="format-select">
+                  <SelectValue placeholder="Select format" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All</SelectItem>
+                  <SelectItem value="OLV">OLV</SelectItem>
+                  <SelectItem value="CTV">CTV</SelectItem>
+                  <SelectItem value="Display">Display</SelectItem>
+                  <SelectItem value="Custom">Custom</SelectItem>
+                </SelectContent>
+              </Select>
+              {format === "Custom" && (
+                <Input
+                  type="text"
+                  placeholder="Enter format"
+                  value={customFormat}
+                  onChange={(e) => setCustomFormat(e.target.value)}
+                  className="w-32"
+                />
+              )}
+            </div>
           </div>
         </div>
 
