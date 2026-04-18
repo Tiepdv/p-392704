@@ -14,17 +14,17 @@ export const useSheetData = (sheetUrl: string, initialTabName: string = "") => {
   const [activeFilters, setActiveFilters] = useState<FilterItem[]>([]);
   const { toast } = useToast();
   
-  // Load sheet tabs on initial render
+  // Load sheet tabs when sheet URL changes
   useEffect(() => {
     loadSheetTabs();
-  }, []);
+  }, [sheetUrl]);
 
-  // Load sheet data when tab is selected
+  // Load sheet data when tab or sheet URL changes
   useEffect(() => {
     if (selectedSheetTab) {
       loadSheetData(selectedSheetTab);
     }
-  }, [selectedSheetTab]);
+  }, [selectedSheetTab, sheetUrl]);
   
   const loadSheetTabs = async () => {
     try {
