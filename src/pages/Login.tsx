@@ -65,9 +65,25 @@ const Login = () => {
     <div className="flex flex-col min-h-screen bg-[#0f1429]">
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6 flex-grow">
-        <div className="mb-8">
+        <div className="mb-8 flex items-center justify-between">
           <h1 className="text-4xl font-bold text-white mb-2">Ads.txt Lines per Market</h1>
-
+          <div className="flex items-center gap-4">
+            <Label htmlFor="format-select" className="text-white text-sm">
+              Format:
+            </Label>
+            <Select value={format} onValueChange={setFormat}>
+              <SelectTrigger className="w-32" id="format-select">
+                <SelectValue placeholder="Select format" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All</SelectItem>
+                <SelectItem value="OLV">OLV</SelectItem>
+                <SelectItem value="CTV">CTV</SelectItem>
+                <SelectItem value="Display">Display</SelectItem>
+                <SelectItem value="Custom">Custom</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="space-y-6">
