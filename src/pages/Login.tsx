@@ -53,6 +53,9 @@ const Login = () => {
     handleApplyFilters
   } = useSheetData(sheetUrl);
 
+  // State for column visibility
+  const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
+
   // Helper similar to Explore: returns the format value for backend usage
   const getFormatValue = () => {
     if (format === "Custom") {
