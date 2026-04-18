@@ -45,6 +45,9 @@ const Login = () => {
   // State for column visibility
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
 
+  // Format filter parameter
+  const [format, setFormat] = useState<string>("All");
+
   // Initialize visible columns when data changes
   React.useEffect(() => {
     if (sheetData.length > 0 && visibleColumns.length === 0) {
