@@ -34,6 +34,9 @@ const Login = () => {
     OLV: "https://docs.google.com/spreadsheets/d/1ivqIrtJ4cBe0565W-V3vNKWHx4KXwMrr/edit?gid=1104687448#gid=1104687448",
     CTV: "https://docs.google.com/spreadsheets/d/1ivqIrtJ4cBe0565W-V3vNKWHx4KXwMrr/edit?gid=1104687448#gid=1104687448",
     Display: "https://docs.google.com/spreadsheets/d/1ivqIrtJ4cBe0565W-V3vNKWHx4KXwMrr/edit?gid=1104687448#gid=1104687448",
+    OLV_CTV: "https://docs.google.com/spreadsheets/d/1ivqIrtJ4cBe0565W-V3vNKWHx4KXwMrr/edit?gid=1104687448#gid=1104687448",
+    OLV_Display: "https://docs.google.com/spreadsheets/d/1ivqIrtJ4cBe0565W-V3vNKWHx4KXwMrr/edit?gid=1104687448#gid=1104687448",
+    CTV_Display: "https://docs.google.com/spreadsheets/d/1ivqIrtJ4cBe0565W-V3vNKWHx4KXwMrr/edit?gid=1104687448#gid=1104687448",
   };
 
   const sheetUrl = sheetUrlMap[format] || sheetUrlMap.All;
@@ -100,7 +103,9 @@ const Login = () => {
                   <SelectItem value="OLV">OLV</SelectItem>
                   <SelectItem value="CTV">CTV</SelectItem>
                   <SelectItem value="Display">Display</SelectItem>
-                  <SelectItem value="Custom">Custom</SelectItem>
+                  <SelectItem value="OLV_CTV">OLV+CTV</SelectItem>
+                  <SelectItem value="OLV_Display">OLV+Display</SelectItem>
+                   <SelectItem value="CTV_Display">CTV+Display</SelectItem>
                 </SelectContent>
               </Select>
               {format === "Custom" && (
