@@ -70,10 +70,16 @@ const Login = () => {
   // const formatvalue = getFormatValue();
   // const apiUrl = `https://europe-west3-showheroes-bi.cloudfunctions.net/test-2-2?format=${formatvalue}`;
 
-  // Initialize visible columns when data changes
+  // Initialize/refresh visible columns when data (and its columns) changes
   React.useEffect(() => {
-    if (sheetData.length > 0 && visibleColumns.length === 0) {
-      setVisibleColumns(Object.keys(sheetData[0]));
+    if (sheetData.length > 0) {
+      const currentKeys = Object.keys(sheetData[0]);
+      const sameSet =
+        currentKeys.length === visibleColumns.length &&
+        currentKeys.every((k) => visibleColumns.includes(k));
+      if (!sameSet) {
+        setVisibleColumns(currentKeys);
+      }
     }
   }, [sheetData]);
 
