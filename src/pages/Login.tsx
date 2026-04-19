@@ -30,13 +30,13 @@ const Login = () => {
 
   // Map format value to corresponding Google Sheet URL
   const sheetUrlMap: Record<string, string> = {
-    All: "https://docs.google.com/spreadsheets/d/1z2NQ13FS_eVrgRd-b49_tsGKtemXpi1v/edit?pli=1&gid=1104687448#gid=1104687448",
-    OLV: "https://docs.google.com/spreadsheets/d/1z2NQ13FS_eVrgRd-b49_tsGKtemXpi1v/edit?pli=1&gid=1104687448#gid=1104687448",
-    CTV: "https://docs.google.com/spreadsheets/d/1ivqIrtJ4cBe0565W-V3vNKWHx4KXwMrr/edit?gid=1104687448#gid=1104687448",
-    Display: "https://docs.google.com/spreadsheets/d/1z2NQ13FS_eVrgRd-b49_tsGKtemXpi1v/edit?pli=1&gid=1104687448#gid=1104687448",
-    OLV_CTV: "https://docs.google.com/spreadsheets/d/1z2NQ13FS_eVrgRd-b49_tsGKtemXpi1v/edit?pli=1&gid=1104687448#gid=1104687448",
-    OLV_Display: "https://docs.google.com/spreadsheets/d/1z2NQ13FS_eVrgRd-b49_tsGKtemXpi1v/edit?pli=1&gid=1104687448#gid=1104687448",
-    CTV_Display: "https://docs.google.com/spreadsheets/d/1otlf6RDF0hulh9XAQEWP-q1RSePcO3r6/edit?gid=1099918181#gid=1099918181",
+    All: "https://docs.google.com/spreadsheets/d/1ZQLDBPfJmaiGs2CRr1y35MQs4rxf9cHr/edit?gid=789240988#gid=789240988",
+    OLV: "https://docs.google.com/spreadsheets/d/1v2FxmyHAoloX5nNztt0Uty_6notizpm4/edit?gid=504941254#gid=504941254",
+    CTV: "https://docs.google.com/spreadsheets/d/15v8Z-73ng9cWBUv7Hfm7FbKufIlqrGb8/edit?gid=82243966#gid=82243966",
+    Display: "https://docs.google.com/spreadsheets/d/1qw_Tl-2v5IBo07qf3z-vnsaGYjK4fuHu/edit?gid=1522350333#gid=1522350333",
+    OLV_CTV: "https://docs.google.com/spreadsheets/d/160I6n5MIWLvZ4tWFLkcoqZOM-qaIe6yX/edit?gid=370586939#gid=370586939",
+    OLV_Display: "https://docs.google.com/spreadsheets/d/1LSUCDm5I-mny89Q76Z_K4VyFHoWHmV3T/edit?gid=1333398794#gid=1333398794",
+    CTV_Display: "https://docs.google.com/spreadsheets/d/15sjadrLa1Yx3G-be_9bOnrFo0mJvz1As/edit?gid=187128128#gid=187128128",
   };
 
   const sheetUrl = sheetUrlMap[format] || sheetUrlMap.All;
