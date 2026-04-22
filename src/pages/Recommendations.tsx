@@ -66,6 +66,7 @@ const Recommendations: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selected, setSelected] = useState<{ publisher: string; market: string } | null>(null);
   const [search, setSearch] = useState("");
+  const [groupBy, setGroupBy] = useState<"partner" | "domain">("partner");
 
   const loadData = async () => {
     try {
