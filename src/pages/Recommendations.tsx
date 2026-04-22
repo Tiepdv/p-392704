@@ -6,7 +6,7 @@ import { transformSheetData } from "@/utils/sheetTransform";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 const SHEET_URL =
