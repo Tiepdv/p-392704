@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTabVisibility } from "@/hooks/useTabVisibility";
-import { FileText, Library, Book, Mail, LogOut, Settings, Search, List} from "lucide-react";
+import { FileText, Library, Book, Mail, LogOut, Settings, Search, List, Lightbulb } from "lucide-react";
 
 const NavBar = () => {
   const location = useLocation();
@@ -68,6 +68,15 @@ const NavBar = () => {
                 </Button>
               </Link>
             )}
+            <Link to="/recommendations">
+              <Button
+                variant={isActive("/recommendations") ? "default" : "ghost"}
+                className="gap-2"
+              >
+                <Lightbulb className="h-4 w-4" />
+                Recommendation Lines
+              </Button>
+            </Link>
             {isTabVisible('publishers') &&  false && (
               <Link to="/publishers">
                 <Button 
