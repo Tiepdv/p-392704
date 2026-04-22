@@ -68,6 +68,7 @@ const NavBar = () => {
                 </Button>
               </Link>
             )}
+            {isTabVisible('publishers') &&  false && (
             <Link to="/recommendations">
               <Button
                 variant={isActive("/recommendations") ? "default" : "ghost"}
@@ -76,7 +77,7 @@ const NavBar = () => {
                 <Lightbulb className="h-4 w-4" />
                 Recommendation Lines
               </Button>
-            </Link>
+            </Link>  )}
             {isTabVisible('publishers') &&  false && (
               <Link to="/publishers">
                 <Button 
