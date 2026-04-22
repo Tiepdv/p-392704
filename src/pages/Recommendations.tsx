@@ -89,10 +89,14 @@ const Recommendations: React.FC = () => {
     }
   };
 
+  const loadedForUserRef = React.useRef<string | null>(null);
   useEffect(() => {
-    if (user) loadData();
+    if (user && loadedForUserRef.current !== user.id) {
+      loadedForUserRef.current = user.id;
+      loadData();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user?.id]);
 
   // Aggregate by Publisher + Market
   const aggregated = useMemo(() => {
