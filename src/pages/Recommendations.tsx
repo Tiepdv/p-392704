@@ -193,6 +193,29 @@ const Recommendations: React.FC = () => {
       }))
       .sort((a, b) => b.revenue - a.revenue);
 
+    // group by Domain (domains column is exploded per row; revenue split equally per domain)
+    const byDomain = new Map<string, { row: Row; share: number }[]>();
+    rows.forEach((r) => {
+      const ds = parseDomains(r.domains);
+      if (ds.length === 0) return;
+      const share = parseNumber(r.revenue_forecast) / ds.length;
+      ds.forEach((d) => {
+        if (!byDomain.has(d)) byDomain.set(d, []);
+        byDomain.get(d)!.push({ row: r, share });
+      });
+    });
+    const domainGroups = Array.from(byDomain.entries())
+      .map(([domain, items]) => ({
+        domain,
+        items,
+        revenue: items.reduce((s, x) => s + x.share, 0),
+        linesCount: new Set(
+          items.map((x) => (x.row.ads_txt_line || "").trim()).filter((v) => v.length > 0)
+        ).size,
+      }))
+      .sort((a, b) => b.revenue - a.revenue);
+    const totalDomainRevenue = domainGroups.reduce((s, g) => s + g.revenue, 0);
+
     return {
       rows,
       missingLines,
@@ -200,6 +223,8 @@ const Recommendations: React.FC = () => {
       domainsCount,
       partnersCount: partners.size,
       groups,
+      domainGroups,
+      totalDomainRevenue,
     };
   }, [selected, rawData]);
 
