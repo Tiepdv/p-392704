@@ -108,6 +108,7 @@ const Recommendations: React.FC = () => {
         missingLines: number;
         domainsCount: number;
         revenueRisk: number;
+        _lines: Set<string>;
       }
     >();
     rawData.forEach((r) => {
@@ -115,25 +116,30 @@ const Recommendations: React.FC = () => {
       const market = r.Market || "";
       if (!publisher && !market) return;
       const key = `${publisher}|||${market}`;
-      const lineFilled = r.ads_txt_line && r.ads_txt_line.trim().length > 0 ? 1 : 0;
+      const lineVal = (r.ads_txt_line || "").trim();
       const revenue = parseNumber(r.revenue_forecast);
       const domains = parseDomains(r.domains).length;
       const existing = map.get(key);
       if (existing) {
-        existing.missingLines += lineFilled;
+        if (lineVal) existing._lines.add(lineVal);
         existing.revenueRisk += revenue;
         existing.domainsCount = Math.max(existing.domainsCount, domains);
       } else {
+        const _lines = new Set<string>();
+        if (lineVal) _lines.add(lineVal);
         map.set(key, {
           publisher,
           market,
-          missingLines: lineFilled,
+          missingLines: 0,
           domainsCount: domains,
           revenueRisk: revenue,
+          _lines,
         });
       }
     });
-    return Array.from(map.values()).sort((a, b) => b.revenueRisk - a.revenueRisk);
+    return Array.from(map.values())
+      .map((v) => ({ ...v, missingLines: v._lines.size }))
+      .sort((a, b) => b.revenueRisk - a.revenueRisk);
   }, [rawData]);
 
   const filteredAggregated = useMemo(() => {
