@@ -66,6 +66,7 @@ const Recommendations: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selected, setSelected] = useState<{ publisher: string; market: string } | null>(null);
   const [search, setSearch] = useState("");
+  const [groupBy, setGroupBy] = useState<"partner" | "domain">("partner");
 
   const loadData = async () => {
     try {
@@ -192,6 +193,29 @@ const Recommendations: React.FC = () => {
       }))
       .sort((a, b) => b.revenue - a.revenue);
 
+    // group by Domain (domains column is exploded per row; revenue split equally per domain)
+    const byDomain = new Map<string, { row: Row; share: number }[]>();
+    rows.forEach((r) => {
+      const ds = parseDomains(r.domains);
+      if (ds.length === 0) return;
+      const share = parseNumber(r.revenue_forecast) / ds.length;
+      ds.forEach((d) => {
+        if (!byDomain.has(d)) byDomain.set(d, []);
+        byDomain.get(d)!.push({ row: r, share });
+      });
+    });
+    const domainGroups = Array.from(byDomain.entries())
+      .map(([domain, items]) => ({
+        domain,
+        items,
+        revenue: items.reduce((s, x) => s + x.share, 0),
+        linesCount: new Set(
+          items.map((x) => (x.row.ads_txt_line || "").trim()).filter((v) => v.length > 0)
+        ).size,
+      }))
+      .sort((a, b) => b.revenue - a.revenue);
+    const totalDomainRevenue = domainGroups.reduce((s, g) => s + g.revenue, 0);
+
     return {
       rows,
       missingLines,
@@ -199,6 +223,8 @@ const Recommendations: React.FC = () => {
       domainsCount,
       partnersCount: partners.size,
       groups,
+      domainGroups,
+      totalDomainRevenue,
     };
   }, [selected, rawData]);
 
@@ -343,51 +369,114 @@ const Recommendations: React.FC = () => {
               </div>
 
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                <div className="px-6 py-4 border-b flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900">
-                    Recommended Lines by Demand Partner
-                  </h3>
-                  <Badge variant="secondary">
-                    {detail.missingLines} lines · {detail.partnersCount} partners
-                  </Badge>
+                <div className="px-6 py-4 border-b flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-3">
+                    <h3 className="font-semibold text-gray-900">
+                      {groupBy === "partner" ? "Missing Lines by Partner" : "Missing Lines by Domain"}
+                    </h3>
+                    <Badge variant="secondary" className="bg-gray-100 text-gray-700">
+                      {groupBy === "partner"
+                        ? `${detail.partnersCount} partners · ${formatEuro(detail.revenueRisk)}`
+                        : `${detail.domainGroups.length} domains · ${formatEuro(detail.totalDomainRevenue)}`}
+                    </Badge>
+                  </div>
+                  <div className="inline-flex rounded-md border overflow-hidden">
+                    <button
+                      onClick={() => setGroupBy("partner")}
+                      className={`px-4 py-1.5 text-sm font-medium ${
+                        groupBy === "partner"
+                          ? "bg-green-600 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      By Partner
+                    </button>
+                    <button
+                      onClick={() => setGroupBy("domain")}
+                      className={`px-4 py-1.5 text-sm font-medium border-l ${
+                        groupBy === "domain"
+                          ? "bg-green-600 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      By Domain
+                    </button>
+                  </div>
                 </div>
 
-                {detail.groups.map((g) => (
-                  <div key={g.partner} className="border-b last:border-b-0">
-                    <div className="px-6 py-3 bg-gray-50 flex items-center justify-between">
-                      <div className="font-semibold text-gray-900">
-                        {g.partner}{" "}
-                        <span className="text-gray-400 font-normal text-sm">
-                          {g.linesCount} {g.linesCount === 1 ? "line" : "lines"}
-                        </span>
+                {groupBy === "partner" &&
+                  detail.groups.map((g) => (
+                    <div key={g.partner} className="border-b last:border-b-0">
+                      <div className="px-6 py-3 bg-gray-50 flex items-center justify-between">
+                        <div className="font-semibold text-gray-900">
+                          {g.partner}{" "}
+                          <span className="text-gray-400 font-normal text-sm">
+                            {g.linesCount} {g.linesCount === 1 ? "line" : "lines"}
+                          </span>
+                        </div>
+                        <div className="text-red-600 font-bold">{formatEuro(g.revenue)}</div>
                       </div>
-                      <div className="text-red-600 font-bold">{formatEuro(g.revenue)}</div>
-                    </div>
-                    <div className="grid grid-cols-12 gap-4 px-6 py-2 text-xs font-semibold text-gray-500 uppercase">
-                      <div className="col-span-2">Type</div>
-                      <div className="col-span-7">Ads.txt Line</div>
-                      <div className="col-span-3 text-right">Revenue</div>
-                    </div>
-                    {g.items.map((item, i) => (
-                      <div
-                        key={i}
-                        className="grid grid-cols-12 gap-4 px-6 py-3 items-center text-sm border-t"
-                      >
-                        <div className="col-span-2">
-                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                            {item.ads_txt_type}
-                          </Badge>
-                        </div>
-                        <div className="col-span-7 font-mono text-xs text-gray-700 break-all">
-                          {item.ads_txt_line}
-                        </div>
-                        <div className="col-span-3 text-right text-red-600 font-medium">
-                          {formatEuro(parseNumber(item.revenue_forecast))}
-                        </div>
+                      <div className="grid grid-cols-12 gap-4 px-6 py-2 text-xs font-semibold text-gray-500 uppercase">
+                        <div className="col-span-2">Type</div>
+                        <div className="col-span-7">Ads.txt Line</div>
+                        <div className="col-span-3 text-right">Revenue</div>
                       </div>
-                    ))}
-                  </div>
-                ))}
+                      {g.items.map((item, i) => (
+                        <div
+                          key={i}
+                          className="grid grid-cols-12 gap-4 px-6 py-3 items-center text-sm border-t"
+                        >
+                          <div className="col-span-2">
+                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                              {item.ads_txt_type}
+                            </Badge>
+                          </div>
+                          <div className="col-span-7 font-mono text-xs text-gray-700 break-all">
+                            {item.ads_txt_line}
+                          </div>
+                          <div className="col-span-3 text-right text-red-600 font-medium">
+                            {formatEuro(parseNumber(item.revenue_forecast))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+
+                {groupBy === "domain" &&
+                  detail.domainGroups.map((g) => (
+                    <div key={g.domain} className="border-b last:border-b-0">
+                      <div className="px-6 py-3 bg-gray-50 flex items-center justify-between">
+                        <div className="font-mono text-sm font-semibold text-gray-900">
+                          {g.domain}{" "}
+                          <span className="text-gray-400 font-normal">
+                            {g.linesCount} {g.linesCount === 1 ? "line missing" : "lines missing"}
+                          </span>
+                        </div>
+                        <div className="text-red-600 font-bold">{formatEuro(g.revenue)}</div>
+                      </div>
+                      <div className="grid grid-cols-12 gap-4 px-6 py-2 text-xs font-semibold text-gray-500 uppercase">
+                        <div className="col-span-1">Priority</div>
+                        <div className="col-span-3">Demand Partner</div>
+                        <div className="col-span-6">Ads.txt Line</div>
+                        <div className="col-span-2 text-right">Revenue</div>
+                      </div>
+                      {g.items.map(({ row: item, share }, i) => (
+                        <div
+                          key={i}
+                          className="grid grid-cols-12 gap-4 px-6 py-3 items-center text-sm border-t"
+                        >
+                          <div className="col-span-1 text-gray-300">—</div>
+                          <div className="col-span-3 text-gray-900">{item["Demand Partner"]}</div>
+                          <div className="col-span-6 font-mono text-xs text-gray-700 break-all">
+                            {item.ads_txt_line}
+                          </div>
+                          <div className="col-span-2 text-right text-red-600 font-medium">
+                            {formatEuro(share)}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
               </div>
             </div>
           )
