@@ -161,7 +161,9 @@ const Recommendations: React.FC = () => {
     const rows = rawData.filter(
       (r) => r.Publisher === selected.publisher && r.Market === selected.market
     );
-    const missingLines = rows.filter((r) => r.ads_txt_line && r.ads_txt_line.trim().length > 0).length;
+    const missingLines = new Set(
+      rows.map((r) => (r.ads_txt_line || "").trim()).filter((v) => v.length > 0)
+    ).size;
     const revenueRisk = rows.reduce((sum, r) => sum + parseNumber(r.revenue_forecast), 0);
     const domainsCount = rows.reduce((m, r) => Math.max(m, parseDomains(r.domains).length), 0);
     const partners = new Set(rows.map((r) => r["Demand Partner"]).filter(Boolean));
