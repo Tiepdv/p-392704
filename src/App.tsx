@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import SellersJson from "./pages/SellersJson";
 import Explore from "./pages/Explore";
 import Publishers from "./pages/Publishers";
+import Recommendations from "./pages/Recommendations";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { useTabVisibility } from "./hooks/useTabVisibility";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -57,6 +58,13 @@ const AppRoutes = () => {
             </ProtectedRoute>
           } />
           
+          {/* Recommendation lines tab */}
+          <Route path="/recommendations" element={
+            <ProtectedRoute>
+              <Recommendations />
+            </ProtectedRoute>
+          } />
+
           {/* Redirect root to Market Lines for authenticated users */}
           <Route path="/" element={
             <ProtectedRoute>
