@@ -67,6 +67,21 @@ const Recommendations: React.FC = () => {
   const [selected, setSelected] = useState<{ publisher: string; market: string } | null>(null);
   const [search, setSearch] = useState("");
   const [groupBy, setGroupBy] = useState<"partner" | "domain">("partner");
+  const [collapsedPartners, setCollapsedPartners] = useState<Set<string>>(new Set());
+  const [collapsedDomains, setCollapsedDomains] = useState<Set<string>>(new Set());
+
+  const togglePartner = (k: string) =>
+    setCollapsedPartners((prev) => {
+      const next = new Set(prev);
+      next.has(k) ? next.delete(k) : next.add(k);
+      return next;
+    });
+  const toggleDomain = (k: string) =>
+    setCollapsedDomains((prev) => {
+      const next = new Set(prev);
+      next.has(k) ? next.delete(k) : next.add(k);
+      return next;
+    });
 
   const loadData = async () => {
     try {
