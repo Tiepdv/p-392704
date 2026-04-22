@@ -6,7 +6,7 @@ import { transformSheetData } from "@/utils/sheetTransform";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 const SHEET_URL =
@@ -67,6 +67,21 @@ const Recommendations: React.FC = () => {
   const [selected, setSelected] = useState<{ publisher: string; market: string } | null>(null);
   const [search, setSearch] = useState("");
   const [groupBy, setGroupBy] = useState<"partner" | "domain">("partner");
+  const [collapsedPartners, setCollapsedPartners] = useState<Set<string>>(new Set());
+  const [collapsedDomains, setCollapsedDomains] = useState<Set<string>>(new Set());
+
+  const togglePartner = (k: string) =>
+    setCollapsedPartners((prev) => {
+      const next = new Set(prev);
+      next.has(k) ? next.delete(k) : next.add(k);
+      return next;
+    });
+  const toggleDomain = (k: string) =>
+    setCollapsedDomains((prev) => {
+      const next = new Set(prev);
+      next.has(k) ? next.delete(k) : next.add(k);
+      return next;
+    });
 
   const loadData = async () => {
     try {
@@ -405,78 +420,114 @@ const Recommendations: React.FC = () => {
                 </div>
 
                 {groupBy === "partner" &&
-                  detail.groups.map((g) => (
-                    <div key={g.partner} className="border-b last:border-b-0">
-                      <div className="px-6 py-3 bg-gray-50 flex items-center justify-between">
-                        <div className="font-semibold text-gray-900">
-                          {g.partner}{" "}
-                          <span className="text-gray-400 font-normal text-sm">
-                            {g.linesCount} {g.linesCount === 1 ? "line" : "lines"}
-                          </span>
-                        </div>
-                        <div className="text-red-600 font-bold">{formatEuro(g.revenue)}</div>
-                      </div>
-                      <div className="grid grid-cols-12 gap-4 px-6 py-2 text-xs font-semibold text-gray-500 uppercase">
-                        <div className="col-span-2">Type</div>
-                        <div className="col-span-7">Ads.txt Line</div>
-                        <div className="col-span-3 text-right">Revenue</div>
-                      </div>
-                      {g.items.map((item, i) => (
-                        <div
-                          key={i}
-                          className="grid grid-cols-12 gap-4 px-6 py-3 items-center text-sm border-t"
+                  detail.groups.map((g) => {
+                    const isCollapsed = collapsedPartners.has(g.partner);
+                    return (
+                      <div key={g.partner} className="border-b last:border-b-0">
+                        <button
+                          type="button"
+                          onClick={() => togglePartner(g.partner)}
+                          className="w-full px-6 py-3 bg-gray-50 flex items-center justify-between hover:bg-gray-100 transition-colors text-left"
                         >
-                          <div className="col-span-2">
-                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                              {item.ads_txt_type}
-                            </Badge>
+                          <div className="flex items-center gap-2">
+                            <ChevronDown
+                              className={`h-4 w-4 text-gray-500 transition-transform ${
+                                isCollapsed ? "-rotate-90" : ""
+                              }`}
+                            />
+                            <div className="font-semibold text-gray-900">
+                              {g.partner}{" "}
+                              <span className="text-gray-400 font-normal text-sm">
+                                {g.linesCount} {g.linesCount === 1 ? "line" : "lines"}
+                              </span>
+                            </div>
                           </div>
-                          <div className="col-span-7 font-mono text-xs text-gray-700 break-all">
-                            {item.ads_txt_line}
-                          </div>
-                          <div className="col-span-3 text-right text-red-600 font-medium">
-                            {formatEuro(parseNumber(item.revenue_forecast))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
+                          <div className="text-red-600 font-bold">{formatEuro(g.revenue)}</div>
+                        </button>
+                        {!isCollapsed && (
+                          <>
+                            <div className="grid grid-cols-12 gap-4 px-6 py-2 text-xs font-semibold text-gray-500 uppercase">
+                              <div className="col-span-2">Type</div>
+                              <div className="col-span-7">Ads.txt Line</div>
+                              <div className="col-span-3 text-right">Revenue</div>
+                            </div>
+                            {g.items.map((item, i) => (
+                              <div
+                                key={i}
+                                className="grid grid-cols-12 gap-4 px-6 py-3 items-center text-sm border-t"
+                              >
+                                <div className="col-span-2">
+                                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                    {item.ads_txt_type}
+                                  </Badge>
+                                </div>
+                                <div className="col-span-7 font-mono text-xs text-gray-700 break-all">
+                                  {item.ads_txt_line}
+                                </div>
+                                <div className="col-span-3 text-right text-red-600 font-medium">
+                                  {formatEuro(parseNumber(item.revenue_forecast))}
+                                </div>
+                              </div>
+                            ))}
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
 
                 {groupBy === "domain" &&
-                  detail.domainGroups.map((g) => (
-                    <div key={g.domain} className="border-b last:border-b-0">
-                      <div className="px-6 py-3 bg-gray-50 flex items-center justify-between">
-                        <div className="font-mono text-sm font-semibold text-gray-900">
-                          {g.domain}{" "}
-                          <span className="text-gray-400 font-normal">
-                            {g.linesCount} {g.linesCount === 1 ? "line missing" : "lines missing"}
-                          </span>
-                        </div>
-                        <div className="text-red-600 font-bold">{formatEuro(g.revenue)}</div>
-                      </div>
-                      <div className="grid grid-cols-12 gap-4 px-6 py-2 text-xs font-semibold text-gray-500 uppercase">
-                        <div className="col-span-1">Priority</div>
-                        <div className="col-span-3">Demand Partner</div>
-                        <div className="col-span-6">Ads.txt Line</div>
-                        <div className="col-span-2 text-right">Revenue</div>
-                      </div>
-                      {g.items.map(({ row: item, share }, i) => (
-                        <div
-                          key={i}
-                          className="grid grid-cols-12 gap-4 px-6 py-3 items-center text-sm border-t"
+                  detail.domainGroups.map((g) => {
+                    const isCollapsed = collapsedDomains.has(g.domain);
+                    return (
+                      <div key={g.domain} className="border-b last:border-b-0">
+                        <button
+                          type="button"
+                          onClick={() => toggleDomain(g.domain)}
+                          className="w-full px-6 py-3 bg-gray-50 flex items-center justify-between hover:bg-gray-100 transition-colors text-left"
                         >
-                          <div className="col-span-1 text-gray-300">—</div>
-                          <div className="col-span-3 text-gray-900">{item["Demand Partner"]}</div>
-                          <div className="col-span-6 font-mono text-xs text-gray-700 break-all">
-                            {item.ads_txt_line}
+                          <div className="flex items-center gap-2">
+                            <ChevronDown
+                              className={`h-4 w-4 text-gray-500 transition-transform ${
+                                isCollapsed ? "-rotate-90" : ""
+                              }`}
+                            />
+                            <div className="font-mono text-sm font-semibold text-gray-900">
+                              {g.domain}{" "}
+                              <span className="text-gray-400 font-normal">
+                                {g.linesCount} {g.linesCount === 1 ? "line missing" : "lines missing"}
+                              </span>
+                            </div>
                           </div>
-                          <div className="col-span-2 text-right text-red-600 font-medium">
-                            {formatEuro(share)}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
+                          <div className="text-red-600 font-bold">{formatEuro(g.revenue)}</div>
+                        </button>
+                        {!isCollapsed && (
+                          <>
+                            <div className="grid grid-cols-12 gap-4 px-6 py-2 text-xs font-semibold text-gray-500 uppercase">
+                              <div className="col-span-1">Priority</div>
+                              <div className="col-span-3">Demand Partner</div>
+                              <div className="col-span-6">Ads.txt Line</div>
+                              <div className="col-span-2 text-right">Revenue</div>
+                            </div>
+                            {g.items.map(({ row: item, share }, i) => (
+                              <div
+                                key={i}
+                                className="grid grid-cols-12 gap-4 px-6 py-3 items-center text-sm border-t"
+                              >
+                                <div className="col-span-1 text-gray-300">—</div>
+                                <div className="col-span-3 text-gray-900">{item["Demand Partner"]}</div>
+                                <div className="col-span-6 font-mono text-xs text-gray-700 break-all">
+                                  {item.ads_txt_line}
+                                </div>
+                                <div className="col-span-2 text-right text-red-600 font-medium">
+                                  {formatEuro(share)}
+                                </div>
+                              </div>
+                            ))}
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
               </div>
             </div>
           )
