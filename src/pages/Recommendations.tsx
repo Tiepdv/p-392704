@@ -137,9 +137,15 @@ const Recommendations: React.FC = () => {
         });
       }
     });
-    return Array.from(map.values())
+    const result = Array.from(map.values())
       .map((v) => ({ ...v, missingLines: v._lines.size }))
       .sort((a, b) => b.revenueRisk - a.revenueRisk);
+    if (rawData.length > 0) {
+      console.log("[Recommendations] sample row keys:", Object.keys(rawData[0]));
+      console.log("[Recommendations] sample row:", rawData[0]);
+      console.log("[Recommendations] first agg:", result[0]);
+    }
+    return result;
   }, [rawData]);
 
   const filteredAggregated = useMemo(() => {
