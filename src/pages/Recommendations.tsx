@@ -180,6 +180,9 @@ const Recommendations: React.FC = () => {
         partner,
         items,
         revenue: items.reduce((s, x) => s + parseNumber(x.revenue_forecast), 0),
+        linesCount: new Set(
+          items.map((x) => (x.ads_txt_line || "").trim()).filter((v) => v.length > 0)
+        ).size,
       }))
       .sort((a, b) => b.revenue - a.revenue);
 
