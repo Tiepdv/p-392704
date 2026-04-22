@@ -352,7 +352,7 @@ const Recommendations: React.FC = () => {
                       <div className="font-semibold text-gray-900">
                         {g.partner}{" "}
                         <span className="text-gray-400 font-normal text-sm">
-                          {g.items.length} {g.items.length === 1 ? "line" : "lines"}
+                          {g.linesCount} {g.linesCount === 1 ? "line" : "lines"}
                         </span>
                       </div>
                       <div className="text-red-600 font-bold">{formatEuro(g.revenue)}</div>
