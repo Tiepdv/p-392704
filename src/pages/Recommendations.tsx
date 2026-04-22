@@ -478,8 +478,6 @@ const Recommendations: React.FC = () => {
                     </div>
                   ))}
               </div>
-                ))}
-              </div>
             </div>
           )
         )}
