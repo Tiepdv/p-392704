@@ -124,7 +124,6 @@ const Recommendations: React.FC = () => {
         missingLines: number;
         domainsCount: number;
         revenueRisk: number;
-        _lines: Set<string>;
       }
     >();
     rawData.forEach((r) => {
@@ -137,25 +136,20 @@ const Recommendations: React.FC = () => {
       const domains = parseDomains(r.domains).length;
       const existing = map.get(key);
       if (existing) {
-        if (lineVal) existing._lines.add(lineVal);
+        if (lineVal) existing.missingLines += 1;
         existing.revenueRisk += revenue;
         existing.domainsCount = Math.max(existing.domainsCount, domains);
       } else {
-        const _lines = new Set<string>();
-        if (lineVal) _lines.add(lineVal);
         map.set(key, {
           publisher,
           market,
-          missingLines: 0,
+          missingLines: lineVal ? 1 : 0,
           domainsCount: domains,
           revenueRisk: revenue,
-          _lines,
         });
       }
     });
-    const result = Array.from(map.values())
-      .map((v) => ({ ...v, missingLines: v._lines.size }))
-      .sort((a, b) => b.revenueRisk - a.revenueRisk);
+    const result = Array.from(map.values()).sort((a, b) => b.revenueRisk - a.revenueRisk);
     if (rawData.length > 0) {
       console.log("[Recommendations] sample row keys:", Object.keys(rawData[0]));
       console.log("[Recommendations] sample row:", rawData[0]);
@@ -200,11 +194,11 @@ const Recommendations: React.FC = () => {
     const groups = Array.from(byPartner.entries())
       .map(([partner, items]) => ({
         partner,
-        items,
+        items: [...items].sort(
+          (a, b) => parseNumber(b.revenue_forecast) - parseNumber(a.revenue_forecast)
+        ),
         revenue: items.reduce((s, x) => s + parseNumber(x.revenue_forecast), 0),
-        linesCount: new Set(
-          items.map((x) => (x.ads_txt_line || "").trim()).filter((v) => v.length > 0)
-        ).size,
+        linesCount: items.filter((x) => (x.ads_txt_line || "").trim().length > 0).length,
       }))
       .sort((a, b) => b.revenue - a.revenue);
 
@@ -222,11 +216,9 @@ const Recommendations: React.FC = () => {
     const domainGroups = Array.from(byDomain.entries())
       .map(([domain, items]) => ({
         domain,
-        items,
+        items: [...items].sort((a, b) => b.share - a.share),
         revenue: items.reduce((s, x) => s + x.share, 0),
-        linesCount: new Set(
-          items.map((x) => (x.row.ads_txt_line || "").trim()).filter((v) => v.length > 0)
-        ).size,
+        linesCount: items.filter((x) => (x.row.ads_txt_line || "").trim().length > 0).length,
       }))
       .sort((a, b) => b.revenue - a.revenue);
     const totalDomainRevenue = domainGroups.reduce((s, g) => s + g.revenue, 0);
