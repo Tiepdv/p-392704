@@ -194,11 +194,11 @@ const Recommendations: React.FC = () => {
     const groups = Array.from(byPartner.entries())
       .map(([partner, items]) => ({
         partner,
-        items,
+        items: [...items].sort(
+          (a, b) => parseNumber(b.revenue_forecast) - parseNumber(a.revenue_forecast)
+        ),
         revenue: items.reduce((s, x) => s + parseNumber(x.revenue_forecast), 0),
-        linesCount: new Set(
-          items.map((x) => (x.ads_txt_line || "").trim()).filter((v) => v.length > 0)
-        ).size,
+        linesCount: items.filter((x) => (x.ads_txt_line || "").trim().length > 0).length,
       }))
       .sort((a, b) => b.revenue - a.revenue);
 
@@ -216,11 +216,9 @@ const Recommendations: React.FC = () => {
     const domainGroups = Array.from(byDomain.entries())
       .map(([domain, items]) => ({
         domain,
-        items,
+        items: [...items].sort((a, b) => b.share - a.share),
         revenue: items.reduce((s, x) => s + x.share, 0),
-        linesCount: new Set(
-          items.map((x) => (x.row.ads_txt_line || "").trim()).filter((v) => v.length > 0)
-        ).size,
+        linesCount: items.filter((x) => (x.row.ads_txt_line || "").trim().length > 0).length,
       }))
       .sort((a, b) => b.revenue - a.revenue);
     const totalDomainRevenue = domainGroups.reduce((s, g) => s + g.revenue, 0);
