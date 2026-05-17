@@ -68,6 +68,15 @@ const NavBar = () => {
                 </Button>
               </Link>
             )}
+            <Link to="/recommended">
+              <Button
+                variant={isActive("/recommended") ? "default" : "ghost"}
+                className="gap-2"
+              >
+                <Lightbulb className="h-4 w-4" />
+                Recommended
+              </Button>
+            </Link>
             {isTabVisible('publishers') &&  false && (
             <Link to="/recommendations">
               <Button

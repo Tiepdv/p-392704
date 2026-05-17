@@ -15,6 +15,7 @@ import SellersJson from "./pages/SellersJson";
 import Explore from "./pages/Explore";
 import Publishers from "./pages/Publishers";
 import Recommendations from "./pages/Recommendations";
+import Recommended from "./pages/Recommended";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { useTabVisibility } from "./hooks/useTabVisibility";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -58,6 +59,13 @@ const AppRoutes = () => {
             </ProtectedRoute>
           } />
           
+          {/* Recommended (cloud function) */}
+          <Route path="/recommended" element={
+            <ProtectedRoute>
+              <Recommended />
+            </ProtectedRoute>
+          } />
+
           {/* Recommendation lines tab */}
           <Route path="/recommendations" element={
             <ProtectedRoute>
