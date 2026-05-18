@@ -3,8 +3,19 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, ChevronLeft, ChevronDown, ChevronRight, Search, Download } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Loader2,
+  ChevronLeft,
+  ChevronDown,
+  ChevronRight,
+  Search,
+  Download,
+  Sparkles,
+  TrendingUp,
+  AlertTriangle,
+  Globe,
+} from "lucide-react";
 
 const API_URL = "https://europe-west3-showheroes-bi.cloudfunctions.net/test_json";
 
@@ -50,11 +61,10 @@ const fmtEuro = (v: number) => {
   const abs = Math.abs(v);
   const sign = v < 0 ? "-" : "";
   if (abs >= 1000) return `${sign}€${(abs / 1000).toFixed(1)}K`;
-  return `${sign}€${abs.toFixed(0)}`;
+  return `${sign}€${abs.toFixed(2)}`;
 };
 
 const fmtRiskEuro = (v: number) => `-${fmtEuro(v).replace(/^-/, "")}`;
-
 const fmtPct = (v: number) => `${v.toFixed(1)}%`;
 
 const csvEscape = (val: any) => {
@@ -73,6 +83,8 @@ const downloadCsv = (filename: string, rows: any[][]) => {
   a.click();
   URL.revokeObjectURL(url);
 };
+
+/* ---------------- Root ---------------- */
 
 const Recommended: React.FC = () => {
   const { toast } = useToast();
@@ -101,7 +113,6 @@ const Recommended: React.FC = () => {
     }
   };
 
-  // Only gap rows
   const gapRows = useMemo(
     () => results.filter((r) => r.gap_type && GAP_TYPES.has(r.gap_type)),
     [results]
@@ -113,35 +124,76 @@ const Recommended: React.FC = () => {
     return s.size;
   }, [results]);
 
+  const totalRevenueRisk = useMemo(
+    () => gapRows.reduce((s, r) => s + Number(r.revenue_forecast || 0), 0),
+    [gapRows]
+  );
+
+  const totalPartners = useMemo(() => {
+    const s = new Set<string>();
+    gapRows.forEach((r) => r.demand_partner && s.add(r.demand_partner));
+    return s.size;
+  }, [gapRows]);
+
   return (
-    <div className="min-h-screen bg-[#f5f6f8]">
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <Tabs value={subTab} onValueChange={(v) => setSubTab(v as any)}>
-              <TabsList className="bg-white border">
-                <TabsTrigger
-                  value="lines"
-                  className="data-[state=active]:bg-white data-[state=active]:text-green-600 data-[state=active]:border data-[state=active]:border-green-500 rounded-md px-5"
-                >
-                  Recommended Lines
-                </TabsTrigger>
-                <TabsTrigger value="adoption" className="px-5">
-                  Adoption Rate
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-          <div className="text-sm text-gray-600">
-            <span className="font-semibold">{totalDomains.toLocaleString()}</span> domains
+    <div className="min-h-screen bg-[#0f1429] text-slate-100">
+      <div className="container mx-auto px-4 py-8">
+        {/* Hero */}
+        <div className="mb-8 relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#1a2244] via-[#141a36] to-[#0f1429] p-6 md:p-8">
+          <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+          <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-primary/90 bg-primary/10 border border-primary/20 px-3 py-1 rounded-full mb-3">
+                <Sparkles className="h-3.5 w-3.5" /> Recommended
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+                Ads.txt Recommendations
+              </h1>
+              <p className="text-slate-400 mt-2 max-w-2xl">
+                Discover missing ads.txt lines and partner adoption gaps — prioritised by revenue at risk.
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-3 md:gap-4">
+              <HeroStat icon={<Globe className="h-4 w-4" />} label="Domains" value={totalDomains.toLocaleString()} />
+              <HeroStat icon={<TrendingUp className="h-4 w-4" />} label="Partners" value={totalPartners.toLocaleString()} />
+              <HeroStat
+                icon={<AlertTriangle className="h-4 w-4" />}
+                label="Revenue at risk"
+                value={fmtRiskEuro(totalRevenueRisk)}
+                tone="danger"
+              />
+            </div>
           </div>
         </div>
 
+        {/* Sub-tabs */}
+        <div className="mb-6">
+          <Tabs value={subTab} onValueChange={(v) => setSubTab(v as any)}>
+            <TabsList className="bg-white/5 border border-white/10 backdrop-blur p-1 h-auto rounded-xl">
+              <TabsTrigger
+                value="lines"
+                className="px-5 py-2 text-slate-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg"
+              >
+                Recommended Lines
+              </TabsTrigger>
+              <TabsTrigger
+                value="adoption"
+                className="px-5 py-2 text-slate-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg"
+              >
+                Adoption Rate
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+
         {isLoading ? (
-          <div className="bg-white rounded-lg p-12 text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary mb-3" />
-            <p className="text-gray-500">Loading recommended data…</p>
-          </div>
+          <Panel>
+            <div className="p-16 text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary mb-3" />
+              <p className="text-slate-400">Loading recommended data…</p>
+            </div>
+          </Panel>
         ) : subTab === "lines" ? (
           <RecommendedLines rows={gapRows} onRefresh={fetchData} />
         ) : (
@@ -152,9 +204,32 @@ const Recommended: React.FC = () => {
   );
 };
 
+const HeroStat: React.FC<{ icon: React.ReactNode; label: string; value: string; tone?: "danger" | "default" }> = ({
+  icon,
+  label,
+  value,
+  tone,
+}) => (
+  <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur px-4 py-3 min-w-[120px]">
+    <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-slate-400">
+      {icon}
+      {label}
+    </div>
+    <div className={`text-lg md:text-xl font-bold mt-1 ${tone === "danger" ? "text-rose-400" : "text-white"}`}>
+      {value}
+    </div>
+  </div>
+);
+
+const Panel: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = "" }) => (
+  <div className={`rounded-2xl border border-white/10 bg-[#161c3a]/60 backdrop-blur shadow-2xl shadow-black/20 ${className}`}>
+    {children}
+  </div>
+);
+
 /* ---------------- Recommended Lines ---------------- */
 
-const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> = ({ rows, onRefresh }) => {
+const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> = ({ rows }) => {
   const [search, setSearch] = useState("");
   const [division, setDivision] = useState<string>("__all__");
   const [selected, setSelected] = useState<{ publisher: string; market: string } | null>(null);
@@ -178,9 +253,11 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
     });
   }, [rows, division, search]);
 
-  // group by publisher + market
   const publishers = useMemo(() => {
-    const map = new Map<string, { publisher: string; market: string; missingLines: number; domains: Set<string>; revenue: number }>();
+    const map = new Map<
+      string,
+      { publisher: string; market: string; missingLines: number; domains: Set<string>; revenue: number }
+    >();
     filteredRows.forEach((r) => {
       const key = `${r.company_name}__${r.market_division_supply}`;
       let entry = map.get(key);
@@ -194,7 +271,6 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
         };
         map.set(key, entry);
       }
-      // count all lines (including duplicates) per row
       entry.missingLines += (r.ads_txt_lines || []).length || 1;
       (r.domains || []).forEach((d) => entry!.domains.add(d));
       entry.revenue += Number(r.revenue_forecast || 0);
@@ -203,11 +279,12 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
   }, [filteredRows]);
 
   const maxRevenue = publishers[0]?.revenue || 1;
-
   const quickPicks = publishers.slice(0, 5);
 
   const exportCsv = () => {
-    const rowsOut: any[][] = [["#", "Publisher", "Market Division - Supply", "Missing Lines", "Unique Domains", "Revenue at Risk (€)"]];
+    const rowsOut: any[][] = [
+      ["#", "Publisher", "Market Division - Supply", "Missing Lines", "Unique Domains", "Revenue at Risk (€)"],
+    ];
     publishers.forEach((p, i) =>
       rowsOut.push([i + 1, p.publisher, p.market, p.missingLines, p.domains.size, p.revenue.toFixed(2)])
     );
@@ -230,78 +307,77 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg p-6 border">
-        <h2 className="text-xl font-bold mb-1">Recommended Lines</h2>
-        <p className="text-sm text-gray-500 mb-4">
+      <Panel className="p-6">
+        <h2 className="text-xl font-bold text-white mb-1">Recommended Lines</h2>
+        <p className="text-sm text-slate-400 mb-5">
           Missing ads.txt lines per publisher — grouped by demand partner and prioritised by weight.
         </p>
-        <div className="flex gap-2 mb-3">
-          <Input
-            placeholder="Search publisher name or domain…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="max-w-xl"
-          />
-          <Button className="bg-green-500 hover:bg-green-600 text-white gap-2">
-            <Search className="h-4 w-4" /> Analyse
-          </Button>
+        <div className="flex flex-col md:flex-row gap-3 mb-4">
+          <div className="relative flex-1 max-w-xl">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <Input
+              placeholder="Search publisher name or domain…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 bg-white/5 border-white/10 text-slate-100 placeholder:text-slate-500 focus-visible:ring-primary/40"
+            />
+          </div>
+          <div className="md:w-64">
+            <Select value={division} onValueChange={setDivision}>
+              <SelectTrigger className="bg-white/5 border-white/10 text-slate-100">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__all__">All divisions</SelectItem>
+                {divisions.map((d) => (
+                  <SelectItem key={d} value={d}>
+                    {d}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         {quickPicks.length > 0 && (
-          <div className="text-sm text-gray-600">
-            Quick pick:{" "}
-            {quickPicks.map((p, i) => (
-              <React.Fragment key={p.publisher}>
-                {i > 0 && <span className="mx-1 text-gray-400">·</span>}
-                <button
-                  className="text-blue-600 hover:underline"
-                  onClick={() => setSearch(p.publisher)}
-                >
-                  {p.publisher}
-                </button>
-              </React.Fragment>
+          <div className="text-sm text-slate-400 flex flex-wrap items-center gap-2">
+            <span className="text-xs uppercase tracking-wider text-slate-500">Quick pick:</span>
+            {quickPicks.map((p) => (
+              <button
+                key={p.publisher}
+                className="px-2.5 py-1 text-xs rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-colors"
+                onClick={() => setSearch(p.publisher)}
+              >
+                {p.publisher}
+              </button>
             ))}
           </div>
         )}
-      </div>
+      </Panel>
 
-      <div>
-        <label className="block text-xs uppercase text-gray-500 font-semibold mb-2">
-          Market Division – Supply
-        </label>
-        <Select value={division} onValueChange={setDivision}>
-          <SelectTrigger className="max-w-xs bg-white">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="__all__">All divisions</SelectItem>
-            {divisions.map((d) => (
-              <SelectItem key={d} value={d}>
-                {d}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="bg-white rounded-lg border">
-        <div className="flex items-center justify-between p-4 border-b">
+      <Panel>
+        <div className="flex items-center justify-between p-5 border-b border-white/10">
           <div>
-            <h3 className="font-bold">Publishers by Revenue at Risk</h3>
-            <p className="text-sm text-gray-500">
+            <h3 className="font-bold text-white">Publishers by Revenue at Risk</h3>
+            <p className="text-sm text-slate-400">
               Click a publisher to see their recommended lines grouped by demand partner
             </p>
           </div>
-          <Button variant="outline" size="sm" className="gap-2" onClick={exportCsv}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white"
+            onClick={exportCsv}
+          >
             <Download className="h-4 w-4" /> CSV
           </Button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-xs uppercase text-gray-500 bg-gray-50">
+              <tr className="text-[11px] uppercase tracking-wider text-slate-400 bg-white/5">
                 <th className="py-3 px-4 text-left w-12">#</th>
                 <th className="py-3 px-4 text-left">Publisher</th>
-                <th className="py-3 px-4 text-left">Market Division - Supply</th>
+                <th className="py-3 px-4 text-left">Market Division – Supply</th>
                 <th className="py-3 px-4 text-left">Missing Lines</th>
                 <th className="py-3 px-4 text-left">Revenue at Risk</th>
                 <th className="py-3 px-4" />
@@ -309,23 +385,28 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
             </thead>
             <tbody>
               {publishers.map((p, i) => (
-                <tr key={`${p.publisher}-${p.market}`} className="border-t hover:bg-gray-50">
-                  <td className="py-3 px-4 text-gray-500">{i + 1}</td>
-                  <td className="py-3 px-4 font-medium">{p.publisher}</td>
+                <tr
+                  key={`${p.publisher}-${p.market}`}
+                  className="border-t border-white/5 hover:bg-white/5 transition-colors"
+                >
+                  <td className="py-3 px-4 text-slate-500">{i + 1}</td>
+                  <td className="py-3 px-4 font-medium text-white">{p.publisher}</td>
                   <td className="py-3 px-4">
-                    <span className="inline-block bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded">
+                    <span className="inline-block bg-primary/10 text-primary border border-primary/20 text-xs px-2 py-1 rounded-md">
                       {p.market}
                     </span>
                   </td>
                   <td className="py-3 px-4">
-                    <div className="text-red-600 font-medium">{p.missingLines} missing</div>
-                    <div className="text-xs text-gray-500">{p.domains.size} domain{p.domains.size !== 1 ? "s" : ""}</div>
+                    <div className="text-rose-400 font-semibold">{p.missingLines} missing</div>
+                    <div className="text-xs text-slate-500">
+                      {p.domains.size} domain{p.domains.size !== 1 ? "s" : ""}
+                    </div>
                   </td>
                   <td className="py-3 px-4">
-                    <div className="text-red-600 font-medium">{fmtRiskEuro(p.revenue)}</div>
-                    <div className="mt-1 h-1 bg-gray-200 rounded-full overflow-hidden w-32">
+                    <div className="text-rose-400 font-semibold">{fmtRiskEuro(p.revenue)}</div>
+                    <div className="mt-1 h-1.5 bg-white/10 rounded-full overflow-hidden w-32">
                       <div
-                        className="h-full bg-red-500"
+                        className="h-full bg-gradient-to-r from-rose-500 to-rose-400"
                         style={{ width: `${Math.max(2, (p.revenue / maxRevenue) * 100)}%` }}
                       />
                     </div>
@@ -333,7 +414,7 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
                   <td className="py-3 px-4 text-right">
                     <button
                       onClick={() => setSelected({ publisher: p.publisher, market: p.market })}
-                      className="text-blue-600 hover:underline text-sm inline-flex items-center gap-1"
+                      className="text-primary hover:text-primary/80 text-sm inline-flex items-center gap-1 font-medium"
                     >
                       View lines <ChevronRight className="h-4 w-4" />
                     </button>
@@ -342,7 +423,7 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
               ))}
               {publishers.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-500">
+                  <td colSpan={6} className="py-10 text-center text-slate-500">
                     No publishers match the current filters.
                   </td>
                 </tr>
@@ -350,7 +431,7 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
             </tbody>
           </table>
         </div>
-      </div>
+      </Panel>
     </div>
   );
 };
@@ -394,11 +475,13 @@ const DetailView: React.FC<{
   }, [rows]);
 
   const domainGroups = useMemo(() => {
-    const m = new Map<string, { domain: string; items: { row: ResultRow; share: number; line: AdsTxtLine }[]; revenue: number }>();
+    const m = new Map<
+      string,
+      { domain: string; items: { row: ResultRow; share: number; line: AdsTxtLine }[]; revenue: number }
+    >();
     rows.forEach((r) => {
       const domains = r.domains || [];
       if (domains.length === 0) return;
-      const totalDomainRev = Object.values(r.domain_revenues || {}).reduce((s, v) => s + v, 0);
       domains.forEach((d) => {
         const share =
           r.domain_revenues && r.domain_revenues[d] !== undefined
@@ -420,41 +503,47 @@ const DetailView: React.FC<{
 
   return (
     <div className="space-y-4">
-      <Button variant="ghost" size="sm" onClick={onBack} className="gap-2">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onBack}
+        className="gap-2 text-slate-300 hover:text-white hover:bg-white/10"
+      >
         <ChevronLeft className="h-4 w-4" /> Back to publishers
       </Button>
 
-      <div className="bg-white rounded-lg p-6 border">
-        <h2 className="text-xl font-bold">{publisher}</h2>
-        <p className="text-sm text-gray-500 mb-4">{market}</p>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-gray-50 rounded p-3">
-            <div className="text-xs text-gray-500">Total revenue at risk</div>
-            <div className="text-lg font-bold text-red-600">{fmtRiskEuro(totalRevenue)}</div>
-          </div>
-          <div className="bg-gray-50 rounded p-3">
-            <div className="text-xs text-gray-500">Unique missing lines</div>
-            <div className="text-lg font-bold">{uniqueLines.size}</div>
-          </div>
-          <div className="bg-gray-50 rounded p-3">
-            <div className="text-xs text-gray-500">Demand partners</div>
-            <div className="text-lg font-bold">{partnerGroups.length}</div>
-          </div>
+      <Panel className="p-6">
+        <h2 className="text-2xl font-bold text-white">{publisher}</h2>
+        <p className="text-sm text-slate-400 mb-5">{market}</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <StatCard label="Total revenue at risk" value={fmtRiskEuro(totalRevenue)} tone="danger" />
+          <StatCard label="Unique missing lines" value={String(uniqueLines.size)} />
+          <StatCard label="Demand partners" value={String(partnerGroups.length)} />
         </div>
-      </div>
+      </Panel>
 
-      <div className="bg-white rounded-lg border">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h3 className="font-bold">Recommended lines</h3>
+      <Panel>
+        <div className="flex items-center justify-between p-5 border-b border-white/10">
+          <h3 className="font-bold text-white">Recommended lines</h3>
           <Tabs value={groupBy} onValueChange={(v) => setGroupBy(v as any)}>
-            <TabsList>
-              <TabsTrigger value="partner">By Partner</TabsTrigger>
-              <TabsTrigger value="domain">By Domain</TabsTrigger>
+            <TabsList className="bg-white/5 border border-white/10">
+              <TabsTrigger
+                value="partner"
+                className="text-slate-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                By Partner
+              </TabsTrigger>
+              <TabsTrigger
+                value="domain"
+                className="text-slate-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                By Domain
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
 
-        <div className="divide-y">
+        <div className="divide-y divide-white/5">
           {groupBy === "partner"
             ? partnerGroups.map((g) => {
                 const key = `p:${g.partner}`;
@@ -463,24 +552,24 @@ const DetailView: React.FC<{
                   <div key={key}>
                     <button
                       onClick={() => toggle(key)}
-                      className="w-full flex items-center justify-between p-4 hover:bg-gray-50 text-left"
+                      className="w-full flex items-center justify-between p-4 hover:bg-white/5 text-left transition-colors"
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <ChevronDown
-                          className={`h-4 w-4 transition-transform ${isCollapsed ? "-rotate-90" : ""}`}
+                          className={`h-4 w-4 text-slate-400 transition-transform ${isCollapsed ? "-rotate-90" : ""}`}
                         />
-                        <span className="font-medium">{g.partner}</span>
-                        <span className="text-xs text-gray-500">
+                        <span className="font-medium text-white">{g.partner}</span>
+                        <span className="text-xs text-slate-400 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">
                           {g.lines.length} line{g.lines.length !== 1 ? "s" : ""}
                         </span>
                       </div>
-                      <div className="text-red-600 font-medium text-sm">{fmtRiskEuro(g.revenue)}</div>
+                      <div className="text-rose-400 font-semibold text-sm">{fmtRiskEuro(g.revenue)}</div>
                     </button>
                     {!isCollapsed && (
-                      <div className="bg-gray-50 px-4 pb-3">
+                      <div className="bg-black/20 px-4 pb-3">
                         <table className="w-full text-sm">
                           <thead>
-                            <tr className="text-xs text-gray-500 uppercase">
+                            <tr className="text-[11px] text-slate-500 uppercase tracking-wider">
                               <th className="text-left py-2">Ads.txt Line</th>
                               <th className="text-left py-2">Type</th>
                               <th className="text-left py-2">Weight</th>
@@ -488,10 +577,10 @@ const DetailView: React.FC<{
                           </thead>
                           <tbody>
                             {g.lines.map((l, i) => (
-                              <tr key={i} className="border-t border-gray-200">
-                                <td className="py-2 font-mono text-xs">{l.ads_txt_line}</td>
-                                <td className="py-2">{l.ads_txt_type || "—"}</td>
-                                <td className="py-2">{l.weight ?? "—"}</td>
+                              <tr key={i} className="border-t border-white/5">
+                                <td className="py-2 font-mono text-xs text-emerald-300">{l.ads_txt_line}</td>
+                                <td className="py-2 text-slate-300">{l.ads_txt_type || "—"}</td>
+                                <td className="py-2 text-slate-300">{l.weight ?? "—"}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -510,24 +599,24 @@ const DetailView: React.FC<{
                   <div key={key}>
                     <button
                       onClick={() => toggle(key)}
-                      className="w-full flex items-center justify-between p-4 hover:bg-gray-50 text-left"
+                      className="w-full flex items-center justify-between p-4 hover:bg-white/5 text-left transition-colors"
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <ChevronDown
-                          className={`h-4 w-4 transition-transform ${isCollapsed ? "-rotate-90" : ""}`}
+                          className={`h-4 w-4 text-slate-400 transition-transform ${isCollapsed ? "-rotate-90" : ""}`}
                         />
-                        <span className="font-medium">{g.domain}</span>
-                        <span className="text-xs text-gray-500">
+                        <span className="font-medium text-white">{g.domain}</span>
+                        <span className="text-xs text-slate-400 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">
                           {uniq.size} unique line{uniq.size !== 1 ? "s" : ""}
                         </span>
                       </div>
-                      <div className="text-red-600 font-medium text-sm">{fmtRiskEuro(g.revenue)}</div>
+                      <div className="text-rose-400 font-semibold text-sm">{fmtRiskEuro(g.revenue)}</div>
                     </button>
                     {!isCollapsed && (
-                      <div className="bg-gray-50 px-4 pb-3">
+                      <div className="bg-black/20 px-4 pb-3">
                         <table className="w-full text-sm">
                           <thead>
-                            <tr className="text-xs text-gray-500 uppercase">
+                            <tr className="text-[11px] text-slate-500 uppercase tracking-wider">
                               <th className="text-left py-2">Demand Partner</th>
                               <th className="text-left py-2">Ads.txt Line</th>
                               <th className="text-left py-2">Revenue</th>
@@ -535,10 +624,10 @@ const DetailView: React.FC<{
                           </thead>
                           <tbody>
                             {sorted.map((it, i) => (
-                              <tr key={i} className="border-t border-gray-200">
-                                <td className="py-2">{it.row.demand_partner}</td>
-                                <td className="py-2 font-mono text-xs">{it.line.ads_txt_line}</td>
-                                <td className="py-2 text-red-600">{fmtRiskEuro(it.share)}</td>
+                              <tr key={i} className="border-t border-white/5">
+                                <td className="py-2 text-slate-300">{it.row.demand_partner}</td>
+                                <td className="py-2 font-mono text-xs text-emerald-300">{it.line.ads_txt_line}</td>
+                                <td className="py-2 text-rose-400">{fmtRiskEuro(it.share)}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -549,10 +638,21 @@ const DetailView: React.FC<{
                 );
               })}
         </div>
-      </div>
+      </Panel>
     </div>
   );
 };
+
+const StatCard: React.FC<{ label: string; value: string; tone?: "danger" | "default" }> = ({
+  label,
+  value,
+  tone,
+}) => (
+  <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+    <div className="text-xs uppercase tracking-wider text-slate-400">{label}</div>
+    <div className={`text-xl font-bold mt-1 ${tone === "danger" ? "text-rose-400" : "text-white"}`}>{value}</div>
+  </div>
+);
 
 /* ---------------- Adoption Rate ---------------- */
 
@@ -561,8 +661,9 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
   gapRows,
 }) => {
   const [division, setDivision] = useState<string>("__all__");
-  const [search, setSearch] = useState("");
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [partnerFilter, setPartnerFilter] = useState<string>("__all__");
+  const [expandedDiv, setExpandedDiv] = useState<Set<string>>(new Set());
+  const [expandedPub, setExpandedPub] = useState<Set<string>>(new Set());
 
   const divisions = useMemo(() => {
     const s = new Set<string>();
@@ -570,83 +671,149 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
     return Array.from(s).sort();
   }, [allRows]);
 
-  const scopedAll = useMemo(
-    () => (division === "__all__" ? allRows : allRows.filter((r) => r.market_division_supply === division)),
-    [allRows, division]
-  );
-  const scopedGap = useMemo(
-    () => (division === "__all__" ? gapRows : gapRows.filter((r) => r.market_division_supply === division)),
-    [gapRows, division]
-  );
-
-  // Total distinct publishers in scope
-  const totalCompanies = useMemo(() => {
-    const s = new Set<string>();
-    scopedAll.forEach((r) => s.add(r.company_name));
-    return s.size;
-  }, [scopedAll]);
-
   const partners = useMemo(() => {
-    const m = new Map<
+    const s = new Set<string>();
+    allRows.forEach((r) => r.demand_partner && s.add(r.demand_partner));
+    return Array.from(s).sort();
+  }, [allRows]);
+
+  // Filtered data based on selected demand partner
+  const scopedAll = useMemo(() => {
+    return allRows.filter((r) => {
+      if (partnerFilter !== "__all__" && r.demand_partner !== partnerFilter) return false;
+      return true;
+    });
+  }, [allRows, partnerFilter]);
+
+  const scopedGap = useMemo(() => {
+    return gapRows.filter((r) => {
+      if (partnerFilter !== "__all__" && r.demand_partner !== partnerFilter) return false;
+      return true;
+    });
+  }, [gapRows, partnerFilter]);
+
+  // Build per-market-division stats
+  const divisionStats = useMemo(() => {
+    // per division: total publishers in scope, missing publishers (from gap), revenue at risk, publisher list
+    const allMap = new Map<string, Set<string>>(); // div -> publishers
+    scopedAll.forEach((r) => {
+      const d = r.market_division_supply;
+      if (!d) return;
+      if (division !== "__all__" && d !== division) return;
+      if (!allMap.has(d)) allMap.set(d, new Set());
+      allMap.get(d)!.add(r.company_name);
+    });
+
+    const gapMap = new Map<
       string,
-      {
-        partner: string;
-        missingPublishers: Map<string, number>;
-        revenue: number;
-      }
+      Map<
+        string,
+        {
+          publisher: string;
+          market: string;
+          revenue: number;
+          domains: Map<string, number>;
+        }
+      >
     >();
     scopedGap.forEach((r) => {
-      const key = r.demand_partner || "—";
-      let g = m.get(key);
-      if (!g) {
-        g = { partner: key, missingPublishers: new Map(), revenue: 0 };
-        m.set(key, g);
+      const d = r.market_division_supply;
+      if (!d) return;
+      if (division !== "__all__" && d !== division) return;
+      if (!gapMap.has(d)) gapMap.set(d, new Map());
+      const pubMap = gapMap.get(d)!;
+      let p = pubMap.get(r.company_name);
+      if (!p) {
+        p = { publisher: r.company_name, market: d, revenue: 0, domains: new Map() };
+        pubMap.set(r.company_name, p);
       }
-      const prev = g.missingPublishers.get(r.company_name) || 0;
-      g.missingPublishers.set(r.company_name, prev + Number(r.revenue_forecast || 0));
-      g.revenue += Number(r.revenue_forecast || 0);
+      p.revenue += Number(r.revenue_forecast || 0);
+      const domains = r.domains || [];
+      domains.forEach((dom) => {
+        const share =
+          r.domain_revenues && r.domain_revenues[dom] !== undefined
+            ? Number(r.domain_revenues[dom])
+            : Number(r.revenue_forecast || 0) / Math.max(domains.length, 1);
+        p!.domains.set(dom, (p!.domains.get(dom) || 0) + share);
+      });
     });
-    const arr = Array.from(m.values()).map((g) => {
-      const missingCount = g.missingPublishers.size;
-      const adoption = totalCompanies > 0 ? ((totalCompanies - missingCount) / totalCompanies) * 100 : 0;
-      return { ...g, missingCount, adoption };
+
+    const list = Array.from(allMap.entries()).map(([div, pubs]) => {
+      const missingPubs = gapMap.get(div) || new Map();
+      const total = pubs.size;
+      const missing = missingPubs.size;
+      const adopted = total - missing;
+      const adoption = total > 0 ? (adopted / total) * 100 : 0;
+      const revenue = Array.from(missingPubs.values()).reduce((s, p) => s + p.revenue, 0);
+      const publishers = Array.from(missingPubs.values()).sort((a, b) => b.revenue - a.revenue);
+      return { division: div, total, missing, adopted, adoption, revenue, publishers };
     });
-    if (search) {
-      const q = search.toLowerCase();
-      return arr.filter((p) => p.partner.toLowerCase().includes(q));
-    }
-    return arr.sort((a, b) => b.revenue - a.revenue);
-  }, [scopedGap, totalCompanies, search]);
+
+    return list.sort((a, b) => b.revenue - a.revenue);
+  }, [scopedAll, scopedGap, division]);
 
   const exportCsv = () => {
-    const out: any[][] = [["Demand Partner", "Adoption %", "Missing Publishers", "Total Publishers", "Revenue at Risk (€)"]];
-    partners.forEach((p) =>
-      out.push([p.partner, p.adoption.toFixed(1), p.missingCount, totalCompanies, p.revenue.toFixed(2)])
+    const out: any[][] = [
+      ["Market Division", "Adoption %", "Adopted", "Missing", "Total Publishers", "Revenue at Risk (€)"],
+    ];
+    divisionStats.forEach((d) =>
+      out.push([d.division, d.adoption.toFixed(1), d.adopted, d.missing, d.total, d.revenue.toFixed(2)])
     );
     downloadCsv("adoption-rate.csv", out);
   };
 
-  const toggle = (k: string) =>
-    setExpanded((prev) => {
+  const toggleDiv = (k: string) =>
+    setExpandedDiv((prev) => {
+      const n = new Set(prev);
+      n.has(k) ? n.delete(k) : n.add(k);
+      return n;
+    });
+  const togglePub = (k: string) =>
+    setExpandedPub((prev) => {
       const n = new Set(prev);
       n.has(k) ? n.delete(k) : n.add(k);
       return n;
     });
 
+  const adoptionColor = (pct: number) => {
+    if (pct >= 80) return { text: "text-emerald-400", bar: "from-emerald-500 to-emerald-400" };
+    if (pct >= 50) return { text: "text-amber-400", bar: "from-amber-500 to-amber-400" };
+    return { text: "text-rose-400", bar: "from-rose-500 to-rose-400" };
+  };
+
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg p-6 border">
-        <h2 className="text-xl font-bold mb-1">Adoption Rate</h2>
-        <p className="text-sm text-gray-500 mb-4">
-          For each demand partner: how many publishers are missing their ads.txt line, and what revenue is at risk.
+      <Panel className="p-6">
+        <h2 className="text-xl font-bold text-white mb-1">Adoption Rate Analysis</h2>
+        <p className="text-sm text-slate-400 mb-5">
+          Select a demand partner to see which publishers haven't added their ads.txt lines. Only publishers without
+          active revenue for that partner are shown.
         </p>
         <div className="flex flex-wrap gap-3 items-end">
           <div>
-            <label className="block text-xs uppercase text-gray-500 font-semibold mb-1">
+            <label className="block text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1.5">
+              Demand Partner
+            </label>
+            <Select value={partnerFilter} onValueChange={setPartnerFilter}>
+              <SelectTrigger className="w-64 bg-white/5 border-white/10 text-slate-100">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="max-h-80">
+                <SelectItem value="__all__">All partners</SelectItem>
+                {partners.map((p) => (
+                  <SelectItem key={p} value={p}>
+                    {p}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="block text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1.5">
               Market Division – Supply
             </label>
             <Select value={division} onValueChange={setDivision}>
-              <SelectTrigger className="w-64 bg-white">
+              <SelectTrigger className="w-64 bg-white/5 border-white/10 text-slate-100">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -659,100 +826,124 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
               </SelectContent>
             </Select>
           </div>
-          <Input
-            placeholder="Search demand partner…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="max-w-sm"
-          />
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg border">
-        <div className="flex items-center justify-between p-4 border-b">
-          <div>
-            <h3 className="font-bold">Demand Partners by Adoption</h3>
-            <p className="text-sm text-gray-500">
-              {totalCompanies.toLocaleString()} publishers in scope · click a row to see missing publishers
-            </p>
-          </div>
-          <Button variant="outline" size="sm" className="gap-2" onClick={exportCsv}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white"
+            onClick={exportCsv}
+          >
             <Download className="h-4 w-4" /> CSV
           </Button>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-xs uppercase text-gray-500 bg-gray-50">
-                <th className="py-3 px-4 text-left">Demand Partner</th>
-                <th className="py-3 px-4 text-left">Adoption %</th>
-                <th className="py-3 px-4 text-left">Missing Publishers</th>
-                <th className="py-3 px-4 text-left">Revenue at Risk</th>
-                <th className="py-3 px-4" />
-              </tr>
-            </thead>
-            <tbody>
-              {partners.map((p) => {
-                const isOpen = expanded.has(p.partner);
-                const list = Array.from(p.missingPublishers.entries()).sort((a, b) => b[1] - a[1]);
-                return (
-                  <React.Fragment key={p.partner}>
-                    <tr className="border-t hover:bg-gray-50 cursor-pointer" onClick={() => toggle(p.partner)}>
-                      <td className="py-3 px-4 font-medium">{p.partner}</td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold">{fmtPct(p.adoption)}</span>
-                          <div className="h-1.5 w-24 bg-gray-200 rounded-full overflow-hidden">
-                            <div className="h-full bg-green-500" style={{ width: `${p.adoption}%` }} />
+      </Panel>
+
+      <div className="space-y-3">
+        {divisionStats.map((d) => {
+          const open = expandedDiv.has(d.division);
+          const col = adoptionColor(d.adoption);
+          return (
+            <Panel key={d.division}>
+              <button
+                onClick={() => toggleDiv(d.division)}
+                className="w-full text-left p-5 flex items-center gap-4 hover:bg-white/5 transition-colors"
+              >
+                <ChevronDown
+                  className={`h-5 w-5 text-slate-400 transition-transform ${open ? "" : "-rotate-90"}`}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center flex-wrap gap-x-3 gap-y-1">
+                    <span className="font-bold text-white">{d.division}</span>
+                    <span className={`text-sm font-semibold ${col.text}`}>{fmtPct(d.adoption)} adopted</span>
+                    <span className="text-sm text-slate-400">
+                      {d.adopted} of {d.total} publishers
+                    </span>
+                  </div>
+                  <div className="mt-2 flex items-center gap-3">
+                    <div className="h-2 flex-1 max-w-md bg-white/10 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full bg-gradient-to-r ${col.bar} transition-all`}
+                        style={{ width: `${d.adoption}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-slate-400">{d.missing} not adopted</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-rose-400 font-bold text-lg">{fmtRiskEuro(d.revenue)}</div>
+                  <div className="text-[11px] uppercase tracking-wider text-slate-500">revenue at risk</div>
+                </div>
+              </button>
+
+              {open && d.publishers.length > 0 && (
+                <div className="border-t border-white/10 bg-black/20">
+                  <div className="grid grid-cols-12 px-5 py-2.5 text-[11px] uppercase tracking-wider text-slate-500">
+                    <div className="col-span-5">Publisher</div>
+                    <div className="col-span-3">Market Supply Division</div>
+                    <div className="col-span-2 text-right">Revenue at Risk</div>
+                    <div className="col-span-2 text-right">Domains</div>
+                  </div>
+                  {d.publishers.map((p) => {
+                    const pkey = `${d.division}::${p.publisher}`;
+                    const pOpen = expandedPub.has(pkey);
+                    const domList = Array.from(p.domains.entries()).sort((a, b) => b[1] - a[1]);
+                    return (
+                      <div key={pkey} className="border-t border-white/5">
+                        <button
+                          onClick={() => togglePub(pkey)}
+                          className="w-full grid grid-cols-12 px-5 py-3 items-center hover:bg-white/5 transition-colors text-left"
+                        >
+                          <div className="col-span-5 flex items-center gap-2 text-slate-100">
+                            <ChevronRight
+                              className={`h-4 w-4 text-slate-500 transition-transform ${pOpen ? "rotate-90" : ""}`}
+                            />
+                            <span className="font-medium">{p.publisher}</span>
                           </div>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="text-red-600 font-medium">{p.missingCount}</span>
-                        <span className="text-gray-400"> / {totalCompanies}</span>
-                      </td>
-                      <td className="py-3 px-4 text-red-600 font-medium">{fmtRiskEuro(p.revenue)}</td>
-                      <td className="py-3 px-4 text-right">
-                        <ChevronDown
-                          className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? "" : "-rotate-90"}`}
-                        />
-                      </td>
-                    </tr>
-                    {isOpen && (
-                      <tr className="bg-gray-50">
-                        <td colSpan={5} className="px-4 pb-4 pt-2">
-                          <table className="w-full text-sm">
-                            <thead>
-                              <tr className="text-xs text-gray-500 uppercase">
-                                <th className="text-left py-2">Publisher</th>
-                                <th className="text-left py-2">Revenue at Risk</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {list.map(([pub, rev]) => (
-                                <tr key={pub} className="border-t border-gray-200">
-                                  <td className="py-2">{pub}</td>
-                                  <td className="py-2 text-red-600">{fmtRiskEuro(rev)}</td>
+                          <div className="col-span-3">
+                            <span className="inline-block bg-primary/10 text-primary border border-primary/20 text-xs px-2 py-1 rounded-md">
+                              {p.market}
+                            </span>
+                          </div>
+                          <div className="col-span-2 text-right text-rose-400 font-semibold">
+                            {fmtRiskEuro(p.revenue)}
+                          </div>
+                          <div className="col-span-2 text-right text-slate-400 text-sm">
+                            {domList.length} domain{domList.length !== 1 ? "s" : ""}
+                          </div>
+                        </button>
+                        {pOpen && (
+                          <div className="px-5 pb-4 pl-12">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="text-[11px] text-slate-500 uppercase tracking-wider">
+                                  <th className="text-left py-2">Domain</th>
+                                  <th className="text-right py-2">Revenue at Risk</th>
                                 </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-              {partners.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-gray-500">
-                    No demand partners match the current filters.
-                  </td>
-                </tr>
+                              </thead>
+                              <tbody>
+                                {domList.map(([dom, rev]) => (
+                                  <tr key={dom} className="border-t border-white/5">
+                                    <td className="py-2 text-slate-200">{dom}</td>
+                                    <td className="py-2 text-right text-rose-400">{fmtRiskEuro(rev)}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               )}
-            </tbody>
-          </table>
-        </div>
+            </Panel>
+          );
+        })}
+
+        {divisionStats.length === 0 && (
+          <Panel>
+            <div className="py-10 text-center text-slate-500">No data matches the current filters.</div>
+          </Panel>
+        )}
       </div>
     </div>
   );
