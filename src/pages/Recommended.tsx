@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Search,
   Download,
-  Sparkles,
   TrendingUp,
   AlertTriangle,
   Globe,
@@ -136,39 +135,10 @@ const Recommended: React.FC = () => {
   }, [gapRows]);
 
   return (
-    <div className="min-h-screen bg-[#0f1429] text-slate-100">
-      <div className="container mx-auto px-4 py-8">
-        {/* Hero */}
-        <div className="mb-8 relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#1a2244] via-[#141a36] to-[#0f1429] p-6 md:p-8">
-          <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-          <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div>
-              <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-primary/90 bg-primary/10 border border-primary/20 px-3 py-1 rounded-full mb-3">
-                <Sparkles className="h-3.5 w-3.5" /> Recommended
-              </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-                Ads.txt Recommendations
-              </h1>
-              <p className="text-slate-400 mt-2 max-w-2xl">
-                Discover missing ads.txt lines and partner adoption gaps — prioritised by revenue at risk.
-              </p>
-            </div>
-            <div className="grid grid-cols-3 gap-3 md:gap-4">
-              <HeroStat icon={<Globe className="h-4 w-4" />} label="Domains" value={totalDomains.toLocaleString()} />
-              <HeroStat icon={<TrendingUp className="h-4 w-4" />} label="Partners" value={totalPartners.toLocaleString()} />
-              <HeroStat
-                icon={<AlertTriangle className="h-4 w-4" />}
-                label="Revenue at risk"
-                value={fmtRiskEuro(totalRevenueRisk)}
-                tone="danger"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Sub-tabs */}
-        <div className="mb-6">
+    <div className="min-h-screen bg-[#0f1429]">
+      <div className="container mx-auto px-4 py-6">
+        {/* Sub-tabs + inline stats on the same row */}
+        <div className="mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <Tabs value={subTab} onValueChange={(v) => setSubTab(v as any)}>
             <TabsList className="bg-white/5 border border-white/10 backdrop-blur p-1 h-auto rounded-xl">
               <TabsTrigger
@@ -185,13 +155,24 @@ const Recommended: React.FC = () => {
               </TabsTrigger>
             </TabsList>
           </Tabs>
+
+          <div className="grid grid-cols-3 gap-3">
+            <HeroStat icon={<Globe className="h-4 w-4" />} label="Domains" value={totalDomains.toLocaleString()} />
+            <HeroStat icon={<TrendingUp className="h-4 w-4" />} label="Partners" value={totalPartners.toLocaleString()} />
+            <HeroStat
+              icon={<AlertTriangle className="h-4 w-4" />}
+              label="Revenue at risk"
+              value={fmtRiskEuro(totalRevenueRisk)}
+              tone="danger"
+            />
+          </div>
         </div>
 
         {isLoading ? (
           <Panel>
             <div className="p-16 text-center">
               <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary mb-3" />
-              <p className="text-slate-400">Loading recommended data…</p>
+              <p className="text-slate-500">Loading recommended data…</p>
             </div>
           </Panel>
         ) : subTab === "lines" ? (
@@ -222,7 +203,7 @@ const HeroStat: React.FC<{ icon: React.ReactNode; label: string; value: string; 
 );
 
 const Panel: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = "" }) => (
-  <div className={`rounded-2xl border border-white/10 bg-[#161c3a]/60 backdrop-blur shadow-2xl shadow-black/20 ${className}`}>
+  <div className={`rounded-lg border border-slate-200 bg-white shadow-md ${className}`}>
     {children}
   </div>
 );
@@ -308,23 +289,23 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
   return (
     <div className="space-y-6">
       <Panel className="p-6">
-        <h2 className="text-xl font-bold text-white mb-1">Recommended Lines</h2>
-        <p className="text-sm text-slate-400 mb-5">
+        <h2 className="text-xl font-bold text-slate-900 mb-1">Recommended Lines</h2>
+        <p className="text-sm text-slate-500 mb-5">
           Missing ads.txt lines per publisher — grouped by demand partner and prioritised by weight.
         </p>
         <div className="flex flex-col md:flex-row gap-3 mb-4">
           <div className="relative flex-1 max-w-xl">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               placeholder="Search publisher name or domain…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 bg-white/5 border-white/10 text-slate-100 placeholder:text-slate-500 focus-visible:ring-primary/40"
+              className="pl-9"
             />
           </div>
           <div className="md:w-64">
             <Select value={division} onValueChange={setDivision}>
-              <SelectTrigger className="bg-white/5 border-white/10 text-slate-100">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -339,8 +320,8 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
           </div>
         </div>
         {quickPicks.length > 0 && (
-          <div className="text-sm text-slate-400 flex flex-wrap items-center gap-2">
-            <span className="text-xs uppercase tracking-wider text-slate-500">Quick pick:</span>
+          <div className="text-sm text-slate-500 flex flex-wrap items-center gap-2">
+            <span className="text-xs uppercase tracking-wider text-slate-400">Quick pick:</span>
             {quickPicks.map((p) => (
               <button
                 key={p.publisher}
@@ -355,26 +336,21 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
       </Panel>
 
       <Panel>
-        <div className="flex items-center justify-between p-5 border-b border-white/10">
+        <div className="flex items-center justify-between p-5 border-b border-slate-200">
           <div>
-            <h3 className="font-bold text-white">Publishers by Revenue at Risk</h3>
-            <p className="text-sm text-slate-400">
+            <h3 className="font-bold text-slate-900">Publishers by Revenue at Risk</h3>
+            <p className="text-sm text-slate-500">
               Click a publisher to see their recommended lines grouped by demand partner
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white"
-            onClick={exportCsv}
-          >
+          <Button variant="outline" size="sm" className="gap-2" onClick={exportCsv}>
             <Download className="h-4 w-4" /> CSV
           </Button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-[11px] uppercase tracking-wider text-slate-400 bg-white/5">
+              <tr className="text-[11px] uppercase tracking-wider text-slate-500 bg-slate-50">
                 <th className="py-3 px-4 text-left w-12">#</th>
                 <th className="py-3 px-4 text-left">Publisher</th>
                 <th className="py-3 px-4 text-left">Market Division – Supply</th>
@@ -387,24 +363,24 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
               {publishers.map((p, i) => (
                 <tr
                   key={`${p.publisher}-${p.market}`}
-                  className="border-t border-white/5 hover:bg-white/5 transition-colors"
+                  className="border-t border-slate-200 hover:bg-slate-50 transition-colors"
                 >
-                  <td className="py-3 px-4 text-slate-500">{i + 1}</td>
-                  <td className="py-3 px-4 font-medium text-white">{p.publisher}</td>
+                  <td className="py-3 px-4 text-slate-400">{i + 1}</td>
+                  <td className="py-3 px-4 font-medium text-slate-900">{p.publisher}</td>
                   <td className="py-3 px-4">
                     <span className="inline-block bg-primary/10 text-primary border border-primary/20 text-xs px-2 py-1 rounded-md">
                       {p.market}
                     </span>
                   </td>
                   <td className="py-3 px-4">
-                    <div className="text-rose-400 font-semibold">{p.missingLines} missing</div>
+                    <div className="text-rose-600 font-semibold">{p.missingLines} missing</div>
                     <div className="text-xs text-slate-500">
                       {p.domains.size} domain{p.domains.size !== 1 ? "s" : ""}
                     </div>
                   </td>
                   <td className="py-3 px-4">
-                    <div className="text-rose-400 font-semibold">{fmtRiskEuro(p.revenue)}</div>
-                    <div className="mt-1 h-1.5 bg-white/10 rounded-full overflow-hidden w-32">
+                    <div className="text-rose-600 font-semibold">{fmtRiskEuro(p.revenue)}</div>
+                    <div className="mt-1 h-1.5 bg-slate-100 rounded-full overflow-hidden w-32">
                       <div
                         className="h-full bg-gradient-to-r from-rose-500 to-rose-400"
                         style={{ width: `${Math.max(2, (p.revenue / maxRevenue) * 100)}%` }}
@@ -423,7 +399,7 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
               ))}
               {publishers.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-slate-500">
+                  <td colSpan={6} className="py-10 text-center text-slate-400">
                     No publishers match the current filters.
                   </td>
                 </tr>
@@ -507,14 +483,14 @@ const DetailView: React.FC<{
         variant="ghost"
         size="sm"
         onClick={onBack}
-        className="gap-2 text-slate-300 hover:text-white hover:bg-white/10"
+        className="gap-2 text-slate-200 hover:text-white hover:bg-white/10"
       >
         <ChevronLeft className="h-4 w-4" /> Back to publishers
       </Button>
 
       <Panel className="p-6">
-        <h2 className="text-2xl font-bold text-white">{publisher}</h2>
-        <p className="text-sm text-slate-400 mb-5">{market}</p>
+        <h2 className="text-2xl font-bold text-slate-900">{publisher}</h2>
+        <p className="text-sm text-slate-500 mb-5">{market}</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <StatCard label="Total revenue at risk" value={fmtRiskEuro(totalRevenue)} tone="danger" />
           <StatCard label="Unique missing lines" value={String(uniqueLines.size)} />
@@ -523,27 +499,17 @@ const DetailView: React.FC<{
       </Panel>
 
       <Panel>
-        <div className="flex items-center justify-between p-5 border-b border-white/10">
-          <h3 className="font-bold text-white">Recommended lines</h3>
+        <div className="flex items-center justify-between p-5 border-b border-slate-200">
+          <h3 className="font-bold text-slate-900">Recommended lines</h3>
           <Tabs value={groupBy} onValueChange={(v) => setGroupBy(v as any)}>
-            <TabsList className="bg-white/5 border border-white/10">
-              <TabsTrigger
-                value="partner"
-                className="text-slate-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                By Partner
-              </TabsTrigger>
-              <TabsTrigger
-                value="domain"
-                className="text-slate-300 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                By Domain
-              </TabsTrigger>
+            <TabsList>
+              <TabsTrigger value="partner">By Partner</TabsTrigger>
+              <TabsTrigger value="domain">By Domain</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
 
-        <div className="divide-y divide-white/5">
+        <div className="divide-y divide-slate-200">
           {groupBy === "partner"
             ? partnerGroups.map((g) => {
                 const key = `p:${g.partner}`;
@@ -552,21 +518,21 @@ const DetailView: React.FC<{
                   <div key={key}>
                     <button
                       onClick={() => toggle(key)}
-                      className="w-full flex items-center justify-between p-4 hover:bg-white/5 text-left transition-colors"
+                      className="w-full flex items-center justify-between p-4 hover:bg-slate-50 text-left transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <ChevronDown
                           className={`h-4 w-4 text-slate-400 transition-transform ${isCollapsed ? "-rotate-90" : ""}`}
                         />
-                        <span className="font-medium text-white">{g.partner}</span>
-                        <span className="text-xs text-slate-400 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">
+                        <span className="font-medium text-slate-900">{g.partner}</span>
+                        <span className="text-xs text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">
                           {g.lines.length} line{g.lines.length !== 1 ? "s" : ""}
                         </span>
                       </div>
-                      <div className="text-rose-400 font-semibold text-sm">{fmtRiskEuro(g.revenue)}</div>
+                      <div className="text-rose-600 font-semibold text-sm">{fmtRiskEuro(g.revenue)}</div>
                     </button>
                     {!isCollapsed && (
-                      <div className="bg-black/20 px-4 pb-3">
+                      <div className="bg-slate-50 px-4 pb-3">
                         <table className="w-full text-sm">
                           <thead>
                             <tr className="text-[11px] text-slate-500 uppercase tracking-wider">
@@ -577,10 +543,10 @@ const DetailView: React.FC<{
                           </thead>
                           <tbody>
                             {g.lines.map((l, i) => (
-                              <tr key={i} className="border-t border-white/5">
-                                <td className="py-2 font-mono text-xs text-emerald-300">{l.ads_txt_line}</td>
-                                <td className="py-2 text-slate-300">{l.ads_txt_type || "—"}</td>
-                                <td className="py-2 text-slate-300">{l.weight ?? "—"}</td>
+                              <tr key={i} className="border-t border-slate-200">
+                                <td className="py-2 font-mono text-xs text-emerald-700">{l.ads_txt_line}</td>
+                                <td className="py-2 text-slate-700">{l.ads_txt_type || "—"}</td>
+                                <td className="py-2 text-slate-700">{l.weight ?? "—"}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -599,21 +565,21 @@ const DetailView: React.FC<{
                   <div key={key}>
                     <button
                       onClick={() => toggle(key)}
-                      className="w-full flex items-center justify-between p-4 hover:bg-white/5 text-left transition-colors"
+                      className="w-full flex items-center justify-between p-4 hover:bg-slate-50 text-left transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <ChevronDown
                           className={`h-4 w-4 text-slate-400 transition-transform ${isCollapsed ? "-rotate-90" : ""}`}
                         />
-                        <span className="font-medium text-white">{g.domain}</span>
-                        <span className="text-xs text-slate-400 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">
+                        <span className="font-medium text-slate-900">{g.domain}</span>
+                        <span className="text-xs text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">
                           {uniq.size} unique line{uniq.size !== 1 ? "s" : ""}
                         </span>
                       </div>
-                      <div className="text-rose-400 font-semibold text-sm">{fmtRiskEuro(g.revenue)}</div>
+                      <div className="text-rose-600 font-semibold text-sm">{fmtRiskEuro(g.revenue)}</div>
                     </button>
                     {!isCollapsed && (
-                      <div className="bg-black/20 px-4 pb-3">
+                      <div className="bg-slate-50 px-4 pb-3">
                         <table className="w-full text-sm">
                           <thead>
                             <tr className="text-[11px] text-slate-500 uppercase tracking-wider">
@@ -624,10 +590,10 @@ const DetailView: React.FC<{
                           </thead>
                           <tbody>
                             {sorted.map((it, i) => (
-                              <tr key={i} className="border-t border-white/5">
-                                <td className="py-2 text-slate-300">{it.row.demand_partner}</td>
-                                <td className="py-2 font-mono text-xs text-emerald-300">{it.line.ads_txt_line}</td>
-                                <td className="py-2 text-rose-400">{fmtRiskEuro(it.share)}</td>
+                              <tr key={i} className="border-t border-slate-200">
+                                <td className="py-2 text-slate-700">{it.row.demand_partner}</td>
+                                <td className="py-2 font-mono text-xs text-emerald-700">{it.line.ads_txt_line}</td>
+                                <td className="py-2 text-rose-600">{fmtRiskEuro(it.share)}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -648,9 +614,9 @@ const StatCard: React.FC<{ label: string; value: string; tone?: "danger" | "defa
   value,
   tone,
 }) => (
-  <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-    <div className="text-xs uppercase tracking-wider text-slate-400">{label}</div>
-    <div className={`text-xl font-bold mt-1 ${tone === "danger" ? "text-rose-400" : "text-white"}`}>{value}</div>
+  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+    <div className="text-xs uppercase tracking-wider text-slate-500">{label}</div>
+    <div className={`text-xl font-bold mt-1 ${tone === "danger" ? "text-rose-600" : "text-slate-900"}`}>{value}</div>
   </div>
 );
 
@@ -677,7 +643,6 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
     return Array.from(s).sort();
   }, [allRows]);
 
-  // Filtered data based on selected demand partner
   const scopedAll = useMemo(() => {
     return allRows.filter((r) => {
       if (partnerFilter !== "__all__" && r.demand_partner !== partnerFilter) return false;
@@ -692,10 +657,8 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
     });
   }, [gapRows, partnerFilter]);
 
-  // Build per-market-division stats
   const divisionStats = useMemo(() => {
-    // per division: total publishers in scope, missing publishers (from gap), revenue at risk, publisher list
-    const allMap = new Map<string, Set<string>>(); // div -> publishers
+    const allMap = new Map<string, Set<string>>();
     scopedAll.forEach((r) => {
       const d = r.market_division_supply;
       if (!d) return;
@@ -706,15 +669,7 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
 
     const gapMap = new Map<
       string,
-      Map<
-        string,
-        {
-          publisher: string;
-          market: string;
-          revenue: number;
-          domains: Map<string, number>;
-        }
-      >
+      Map<string, { publisher: string; market: string; revenue: number; domains: Map<string, number> }>
     >();
     scopedGap.forEach((r) => {
       const d = r.market_division_supply;
@@ -776,26 +731,26 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
     });
 
   const adoptionColor = (pct: number) => {
-    if (pct >= 80) return { text: "text-emerald-400", bar: "from-emerald-500 to-emerald-400" };
-    if (pct >= 50) return { text: "text-amber-400", bar: "from-amber-500 to-amber-400" };
-    return { text: "text-rose-400", bar: "from-rose-500 to-rose-400" };
+    if (pct >= 80) return { text: "text-emerald-600", bar: "from-emerald-500 to-emerald-400" };
+    if (pct >= 50) return { text: "text-amber-600", bar: "from-amber-500 to-amber-400" };
+    return { text: "text-rose-600", bar: "from-rose-500 to-rose-400" };
   };
 
   return (
     <div className="space-y-6">
       <Panel className="p-6">
-        <h2 className="text-xl font-bold text-white mb-1">Adoption Rate Analysis</h2>
-        <p className="text-sm text-slate-400 mb-5">
+        <h2 className="text-xl font-bold text-slate-900 mb-1">Adoption Rate Analysis</h2>
+        <p className="text-sm text-slate-500 mb-5">
           Select a demand partner to see which publishers haven't added their ads.txt lines. Only publishers without
           active revenue for that partner are shown.
         </p>
         <div className="flex flex-wrap gap-3 items-end">
           <div>
-            <label className="block text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1.5">
+            <label className="block text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-1.5">
               Demand Partner
             </label>
             <Select value={partnerFilter} onValueChange={setPartnerFilter}>
-              <SelectTrigger className="w-64 bg-white/5 border-white/10 text-slate-100">
+              <SelectTrigger className="w-64">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="max-h-80">
@@ -809,11 +764,11 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
             </Select>
           </div>
           <div>
-            <label className="block text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1.5">
+            <label className="block text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-1.5">
               Market Division – Supply
             </label>
             <Select value={division} onValueChange={setDivision}>
-              <SelectTrigger className="w-64 bg-white/5 border-white/10 text-slate-100">
+              <SelectTrigger className="w-64">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -826,12 +781,7 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
               </SelectContent>
             </Select>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white"
-            onClick={exportCsv}
-          >
+          <Button variant="outline" size="sm" className="gap-2" onClick={exportCsv}>
             <Download className="h-4 w-4" /> CSV
           </Button>
         </div>
@@ -845,37 +795,37 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
             <Panel key={d.division}>
               <button
                 onClick={() => toggleDiv(d.division)}
-                className="w-full text-left p-5 flex items-center gap-4 hover:bg-white/5 transition-colors"
+                className="w-full text-left p-5 flex items-center gap-4 hover:bg-slate-50 transition-colors"
               >
                 <ChevronDown
                   className={`h-5 w-5 text-slate-400 transition-transform ${open ? "" : "-rotate-90"}`}
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center flex-wrap gap-x-3 gap-y-1">
-                    <span className="font-bold text-white">{d.division}</span>
+                    <span className="font-bold text-slate-900">{d.division}</span>
                     <span className={`text-sm font-semibold ${col.text}`}>{fmtPct(d.adoption)} adopted</span>
-                    <span className="text-sm text-slate-400">
+                    <span className="text-sm text-slate-500">
                       {d.adopted} of {d.total} publishers
                     </span>
                   </div>
                   <div className="mt-2 flex items-center gap-3">
-                    <div className="h-2 flex-1 max-w-md bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-2 flex-1 max-w-md bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className={`h-full bg-gradient-to-r ${col.bar} transition-all`}
                         style={{ width: `${d.adoption}%` }}
                       />
                     </div>
-                    <span className="text-xs text-slate-400">{d.missing} not adopted</span>
+                    <span className="text-xs text-slate-500">{d.missing} not adopted</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-rose-400 font-bold text-lg">{fmtRiskEuro(d.revenue)}</div>
-                  <div className="text-[11px] uppercase tracking-wider text-slate-500">revenue at risk</div>
+                  <div className="text-rose-600 font-bold text-lg">{fmtRiskEuro(d.revenue)}</div>
+                  <div className="text-[11px] uppercase tracking-wider text-slate-400">revenue at risk</div>
                 </div>
               </button>
 
               {open && d.publishers.length > 0 && (
-                <div className="border-t border-white/10 bg-black/20">
+                <div className="border-t border-slate-200 bg-slate-50">
                   <div className="grid grid-cols-12 px-5 py-2.5 text-[11px] uppercase tracking-wider text-slate-500">
                     <div className="col-span-5">Publisher</div>
                     <div className="col-span-3">Market Supply Division</div>
@@ -887,14 +837,14 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
                     const pOpen = expandedPub.has(pkey);
                     const domList = Array.from(p.domains.entries()).sort((a, b) => b[1] - a[1]);
                     return (
-                      <div key={pkey} className="border-t border-white/5">
+                      <div key={pkey} className="border-t border-slate-200">
                         <button
                           onClick={() => togglePub(pkey)}
-                          className="w-full grid grid-cols-12 px-5 py-3 items-center hover:bg-white/5 transition-colors text-left"
+                          className="w-full grid grid-cols-12 px-5 py-3 items-center hover:bg-white transition-colors text-left"
                         >
-                          <div className="col-span-5 flex items-center gap-2 text-slate-100">
+                          <div className="col-span-5 flex items-center gap-2 text-slate-900">
                             <ChevronRight
-                              className={`h-4 w-4 text-slate-500 transition-transform ${pOpen ? "rotate-90" : ""}`}
+                              className={`h-4 w-4 text-slate-400 transition-transform ${pOpen ? "rotate-90" : ""}`}
                             />
                             <span className="font-medium">{p.publisher}</span>
                           </div>
@@ -903,15 +853,15 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
                               {p.market}
                             </span>
                           </div>
-                          <div className="col-span-2 text-right text-rose-400 font-semibold">
+                          <div className="col-span-2 text-right text-rose-600 font-semibold">
                             {fmtRiskEuro(p.revenue)}
                           </div>
-                          <div className="col-span-2 text-right text-slate-400 text-sm">
+                          <div className="col-span-2 text-right text-slate-500 text-sm">
                             {domList.length} domain{domList.length !== 1 ? "s" : ""}
                           </div>
                         </button>
                         {pOpen && (
-                          <div className="px-5 pb-4 pl-12">
+                          <div className="px-5 pb-4 pl-12 bg-white">
                             <table className="w-full text-sm">
                               <thead>
                                 <tr className="text-[11px] text-slate-500 uppercase tracking-wider">
@@ -921,9 +871,9 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
                               </thead>
                               <tbody>
                                 {domList.map(([dom, rev]) => (
-                                  <tr key={dom} className="border-t border-white/5">
-                                    <td className="py-2 text-slate-200">{dom}</td>
-                                    <td className="py-2 text-right text-rose-400">{fmtRiskEuro(rev)}</td>
+                                  <tr key={dom} className="border-t border-slate-200">
+                                    <td className="py-2 text-slate-700">{dom}</td>
+                                    <td className="py-2 text-right text-rose-600">{fmtRiskEuro(rev)}</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -941,7 +891,7 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
 
         {divisionStats.length === 0 && (
           <Panel>
-            <div className="py-10 text-center text-slate-500">No data matches the current filters.</div>
+            <div className="py-10 text-center text-slate-400">No data matches the current filters.</div>
           </Panel>
         )}
       </div>
