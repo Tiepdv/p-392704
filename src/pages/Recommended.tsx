@@ -787,37 +787,31 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
             <label className="block text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-1.5">
               Demand Partner
             </label>
-            <Select value={partnerFilter} onValueChange={setPartnerFilter}>
-              <SelectTrigger className="w-64">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="max-h-80">
-                <SelectItem value="__all__">All partners</SelectItem>
-                {partners.map((p) => (
-                  <SelectItem key={p} value={p}>
-                    {p}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              value={partnerFilter}
+              onChange={setPartnerFilter}
+              triggerClassName="w-64"
+              searchPlaceholder="Search partner…"
+              options={[
+                { value: "__all__", label: "All partners" },
+                ...partners.map((p) => ({ value: p, label: p })),
+              ]}
+            />
           </div>
           <div>
             <label className="block text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-1.5">
               Market Division – Supply
             </label>
-            <Select value={division} onValueChange={setDivision}>
-              <SelectTrigger className="w-64">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__all__">All divisions</SelectItem>
-                {divisions.map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              value={division}
+              onChange={setDivision}
+              triggerClassName="w-64"
+              searchPlaceholder="Search division…"
+              options={[
+                { value: "__all__", label: "All divisions" },
+                ...divisions.map((d) => ({ value: d, label: d })),
+              ]}
+            />
           </div>
           <Button variant="outline" size="sm" className="gap-2" onClick={exportCsv}>
             <Download className="h-4 w-4" /> CSV
