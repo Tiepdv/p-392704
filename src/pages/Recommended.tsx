@@ -704,7 +704,7 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
       return { division: div, total, missing, adopted, adoption, revenue, publishers };
     });
 
-    return list.sort((a, b) => b.revenue - a.revenue);
+    return list.filter((d) => d.missing >= 1).sort((a, b) => b.revenue - a.revenue);
   }, [scopedAll, scopedGap, division]);
 
   const exportCsv = () => {
