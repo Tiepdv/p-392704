@@ -580,24 +580,65 @@ const DetailView: React.FC<{
                     </button>
                     {!isCollapsed && (
                       <div className="bg-slate-50 px-4 pb-3">
-                        <table className="w-full text-sm">
-                          <thead>
-                            <tr className="text-[11px] text-slate-500 uppercase tracking-wider">
-                              <th className="text-left py-2">Demand Partner</th>
-                              <th className="text-left py-2">Ads.txt Line</th>
-                              <th className="text-left py-2">Revenue</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {sorted.map((it, i) => (
-                              <tr key={i} className="border-t border-slate-200">
-                                <td className="py-2 text-slate-700">{it.row.demand_partner}</td>
-                                <td className="py-2 font-mono text-xs text-emerald-700">{it.line.ads_txt_line}</td>
-                                <td className="py-2 text-rose-600">{fmtRiskEuro(it.share)}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                        {(() => {
+                          const byPartner = new Map<string, { partner: string; items: typeof sorted; revenue: number }>();
+                          sorted.forEach((it) => {
+                            const k = it.row.demand_partner || "—";
+                            let g = byPartner.get(k);
+                            if (!g) {
+                              g = { partner: k, items: [], revenue: 0 };
+                              byPartner.set(k, g);
+                            }
+                            g.items.push(it);
+                            g.revenue += it.share;
+                          });
+                          const partnerList = Array.from(byPartner.values()).sort((a, b) => b.revenue - a.revenue);
+                          return (
+                            <div className="divide-y divide-slate-200 border border-slate-200 rounded-md bg-white">
+                              {partnerList.map((pg) => {
+                                const pkey = `${key}::${pg.partner}`;
+                                const pOpen = !collapsed.has(pkey);
+                                return (
+                                  <div key={pkey}>
+                                    <button
+                                      onClick={() => toggle(pkey)}
+                                      className="w-full flex items-center justify-between px-3 py-2 hover:bg-slate-50 text-left"
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        <ChevronDown
+                                          className={`h-4 w-4 text-slate-400 transition-transform ${pOpen ? "" : "-rotate-90"}`}
+                                        />
+                                        <span className="font-medium text-slate-800 text-sm">{pg.partner}</span>
+                                        <span className="text-[11px] text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">
+                                          {pg.items.length} line{pg.items.length !== 1 ? "s" : ""}
+                                        </span>
+                                      </div>
+                                      <div className="text-rose-600 font-semibold text-xs">{fmtRiskEuro(pg.revenue)}</div>
+                                    </button>
+                                    {pOpen && (
+                                      <table className="w-full text-sm">
+                                        <thead>
+                                          <tr className="text-[11px] text-slate-500 uppercase tracking-wider bg-slate-50">
+                                            <th className="text-left py-2 pl-9">Ads.txt Line</th>
+                                            <th className="text-right py-2 pr-3">Revenue</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {pg.items.map((it, i) => (
+                                            <tr key={i} className="border-t border-slate-200">
+                                              <td className="py-2 pl-9 font-mono text-xs text-slate-800">{it.line.ads_txt_line}</td>
+                                              <td className="py-2 pr-3 text-right text-rose-600">{fmtRiskEuro(it.share)}</td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                        })()}
                       </div>
                     )}
                   </div>
