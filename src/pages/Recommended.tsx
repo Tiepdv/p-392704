@@ -849,7 +849,7 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
                             <span className="font-medium">{p.publisher}</span>
                           </div>
                           <div className="col-span-3">
-                            <span className="inline-block bg-primary/10 text-primary border border-primary/20 text-xs px-2 py-1 rounded-md">
+                            <span className="inline-block bg-slate-100 text-slate-800 border border-slate-300 text-xs px-2 py-1 rounded-md">
                               {p.market}
                             </span>
                           </div>
