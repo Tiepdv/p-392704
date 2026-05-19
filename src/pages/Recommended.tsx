@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SearchableSelect } from "@/components/SearchableSelect";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Loader2,
