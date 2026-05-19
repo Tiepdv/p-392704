@@ -391,7 +391,7 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
                   <td className="py-3 px-4 text-right">
                     <button
                       onClick={() => setSelected({ publisher: p.publisher, market: p.market })}
-                      className="text-slate-800 hover:text-slate-900 text-sm inline-flex items-center gap-1 font-medium"
+                      className="text-blue-700 hover:text-blue-800 text-sm inline-flex items-center gap-1 font-medium"
                     >
                       View lines <ChevronRight className="h-4 w-4" />
                     </button>
