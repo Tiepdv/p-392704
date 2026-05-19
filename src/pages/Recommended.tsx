@@ -325,7 +325,7 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
             {quickPicks.map((p) => (
               <button
                 key={p.publisher}
-                className="px-2.5 py-1 text-xs rounded-full bg-slate-100 border border-slate-300 text-slate-800 hover:bg-slate-200 transition-colors"
+                className="px-2.5 py-1 text-xs rounded-full bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 transition-colors"
                 onClick={() => setSearch(p.publisher)}
               >
                 {p.publisher}
@@ -368,7 +368,8 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
                   <td className="py-3 px-4 text-slate-400">{i + 1}</td>
                   <td className="py-3 px-4 font-medium text-slate-900">{p.publisher}</td>
                   <td className="py-3 px-4">
-                    <span className="inline-block bg-slate-100 text-slate-800 border border-slate-300 text-xs px-2 py-1 rounded-md">
+                    <span className="inline-block bg-blue-50 text-blue-700 border border-blue-200 text-xs px-2 py-1 rounded-md">
+
                       {p.market}
                     </span>
                   </td>
@@ -390,7 +391,7 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
                   <td className="py-3 px-4 text-right">
                     <button
                       onClick={() => setSelected({ publisher: p.publisher, market: p.market })}
-                      className="text-slate-800 hover:text-slate-900 text-sm inline-flex items-center gap-1 font-medium"
+                      className="text-blue-700 hover:text-blue-800 text-sm inline-flex items-center gap-1 font-medium"
                     >
                       View lines <ChevronRight className="h-4 w-4" />
                     </button>
@@ -503,8 +504,8 @@ const DetailView: React.FC<{
           <h3 className="font-bold text-slate-900">Recommended lines</h3>
           <Tabs value={groupBy} onValueChange={(v) => setGroupBy(v as any)}>
             <TabsList>
-              <TabsTrigger value="partner">By Partner</TabsTrigger>
-              <TabsTrigger value="domain">By Domain</TabsTrigger>
+              <TabsTrigger value="partner" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">By Partner</TabsTrigger>
+              <TabsTrigger value="domain" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">By Domain</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -850,7 +851,7 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
                     </span>
                   </div>
                   <div className="mt-2 flex items-center gap-3">
-                    <div className="h-2 flex-1 max-w-md bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-2 w-32 bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className={`h-full bg-gradient-to-r ${col.bar} transition-all`}
                         style={{ width: `${d.adoption}%` }}
