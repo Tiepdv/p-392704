@@ -504,8 +504,8 @@ const DetailView: React.FC<{
           <h3 className="font-bold text-slate-900">Recommended lines</h3>
           <Tabs value={groupBy} onValueChange={(v) => setGroupBy(v as any)}>
             <TabsList>
-              <TabsTrigger value="partner">By Partner</TabsTrigger>
-              <TabsTrigger value="domain">By Domain</TabsTrigger>
+              <TabsTrigger value="partner" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">By Partner</TabsTrigger>
+              <TabsTrigger value="domain" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">By Domain</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
