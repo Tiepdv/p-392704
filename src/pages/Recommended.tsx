@@ -325,7 +325,7 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
             {quickPicks.map((p) => (
               <button
                 key={p.publisher}
-                className="px-2.5 py-1 text-xs rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-colors"
+                className="px-2.5 py-1 text-xs rounded-full bg-slate-100 border border-slate-300 text-slate-800 hover:bg-slate-200 transition-colors"
                 onClick={() => setSearch(p.publisher)}
               >
                 {p.publisher}
