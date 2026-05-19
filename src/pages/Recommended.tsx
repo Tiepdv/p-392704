@@ -368,7 +368,7 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
                   <td className="py-3 px-4 text-slate-400">{i + 1}</td>
                   <td className="py-3 px-4 font-medium text-slate-900">{p.publisher}</td>
                   <td className="py-3 px-4">
-                    <span className="inline-block bg-primary/10 text-primary border border-primary/20 text-xs px-2 py-1 rounded-md">
+                    <span className="inline-block bg-slate-100 text-slate-800 border border-slate-300 text-xs px-2 py-1 rounded-md">
                       {p.market}
                     </span>
                   </td>
