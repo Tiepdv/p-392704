@@ -450,28 +450,25 @@ const DetailView: React.FC<{
   const domainGroups = useMemo(() => {
     const m = new Map<
       string,
-      { domain: string; items: { row: ResultRow; share: number; line: AdsTxtLine }[]; revenue: number }
+      { domain: string; items: { row: ResultRow; weight: number; line: AdsTxtLine }[]; weight: number }
     >();
     rows.forEach((r) => {
       const domains = r.domains || [];
       if (domains.length === 0) return;
       domains.forEach((d) => {
-        const share =
-          r.domain_revenues && r.domain_revenues[d] !== undefined
-            ? Number(r.domain_revenues[d])
-            : Number(r.revenue_forecast || 0) / domains.length;
         let g = m.get(d);
         if (!g) {
-          g = { domain: d, items: [], revenue: 0 };
+          g = { domain: d, items: [], weight: 0 };
           m.set(d, g);
         }
         (r.ads_txt_lines || []).forEach((line) => {
-          g!.items.push({ row: r, share, line });
+          const w = Number(line.weight ?? 0);
+          g!.items.push({ row: r, weight: w, line });
+          g!.weight += w;
         });
-        g.revenue += share;
       });
     });
-    return Array.from(m.values()).sort((a, b) => b.revenue - a.revenue);
+    return Array.from(m.values()).sort((a, b) => b.weight - a.weight);
   }, [rows]);
 
   return (
@@ -556,7 +553,7 @@ const DetailView: React.FC<{
             : domainGroups.map((g) => {
                 const key = `d:${g.domain}`;
                 const isCollapsed = collapsed.has(key);
-                const sorted = [...g.items].sort((a, b) => b.share - a.share);
+                const sorted = [...g.items].sort((a, b) => b.weight - a.weight);
                 const uniq = new Set(sorted.map((x) => x.line.ads_txt_line));
                 return (
                   <div key={key}>
@@ -573,23 +570,23 @@ const DetailView: React.FC<{
                           {uniq.size} unique line{uniq.size !== 1 ? "s" : ""}
                         </span>
                       </div>
-                      <div className="text-rose-600 font-semibold text-sm">{fmtRiskEuro(g.revenue)}</div>
+                      <div className="text-slate-700 font-semibold text-sm">Weight: {g.weight.toLocaleString()}</div>
                     </button>
                     {!isCollapsed && (
                       <div className="bg-slate-50 px-4 pb-3">
                         {(() => {
-                          const byPartner = new Map<string, { partner: string; items: typeof sorted; revenue: number }>();
+                          const byPartner = new Map<string, { partner: string; items: typeof sorted; weight: number }>();
                           sorted.forEach((it) => {
                             const k = it.row.demand_partner || "—";
-                            let g = byPartner.get(k);
-                            if (!g) {
-                              g = { partner: k, items: [], revenue: 0 };
-                              byPartner.set(k, g);
+                            let pg = byPartner.get(k);
+                            if (!pg) {
+                              pg = { partner: k, items: [], weight: 0 };
+                              byPartner.set(k, pg);
                             }
-                            g.items.push(it);
-                            g.revenue += it.share;
+                            pg.items.push(it);
+                            pg.weight += it.weight;
                           });
-                          const partnerList = Array.from(byPartner.values()).sort((a, b) => b.revenue - a.revenue);
+                          const partnerList = Array.from(byPartner.values()).sort((a, b) => b.weight - a.weight);
                           return (
                             <div className="divide-y divide-slate-200 border border-slate-200 rounded-md bg-white">
                               {partnerList.map((pg) => {
@@ -610,21 +607,21 @@ const DetailView: React.FC<{
                                           {pg.items.length} line{pg.items.length !== 1 ? "s" : ""}
                                         </span>
                                       </div>
-                                      <div className="text-rose-600 font-semibold text-xs">{fmtRiskEuro(pg.revenue)}</div>
+                                      <div className="text-slate-700 font-semibold text-xs">Weight: {pg.weight.toLocaleString()}</div>
                                     </button>
                                     {pOpen && (
                                       <table className="w-full text-sm">
                                         <thead>
                                           <tr className="text-[11px] text-slate-500 uppercase tracking-wider bg-slate-50">
                                             <th className="text-left py-2 pl-9">Ads.txt Line</th>
-                                            <th className="text-right py-2 pr-3">Revenue</th>
+                                            <th className="text-right py-2 pr-3">Weight</th>
                                           </tr>
                                         </thead>
                                         <tbody>
                                           {pg.items.map((it, i) => (
                                             <tr key={i} className="border-t border-slate-200">
                                               <td className="py-2 pl-9 font-mono text-xs text-slate-800">{it.line.ads_txt_line}</td>
-                                              <td className="py-2 pr-3 text-right text-rose-600">{fmtRiskEuro(it.share)}</td>
+                                              <td className="py-2 pr-3 text-right text-slate-700">{it.line.weight ?? "—"}</td>
                                             </tr>
                                           ))}
                                         </tbody>
