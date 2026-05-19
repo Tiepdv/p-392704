@@ -450,28 +450,25 @@ const DetailView: React.FC<{
   const domainGroups = useMemo(() => {
     const m = new Map<
       string,
-      { domain: string; items: { row: ResultRow; share: number; line: AdsTxtLine }[]; revenue: number }
+      { domain: string; items: { row: ResultRow; weight: number; line: AdsTxtLine }[]; weight: number }
     >();
     rows.forEach((r) => {
       const domains = r.domains || [];
       if (domains.length === 0) return;
       domains.forEach((d) => {
-        const share =
-          r.domain_revenues && r.domain_revenues[d] !== undefined
-            ? Number(r.domain_revenues[d])
-            : Number(r.revenue_forecast || 0) / domains.length;
         let g = m.get(d);
         if (!g) {
-          g = { domain: d, items: [], revenue: 0 };
+          g = { domain: d, items: [], weight: 0 };
           m.set(d, g);
         }
         (r.ads_txt_lines || []).forEach((line) => {
-          g!.items.push({ row: r, share, line });
+          const w = Number(line.weight ?? 0);
+          g!.items.push({ row: r, weight: w, line });
+          g!.weight += w;
         });
-        g.revenue += share;
       });
     });
-    return Array.from(m.values()).sort((a, b) => b.revenue - a.revenue);
+    return Array.from(m.values()).sort((a, b) => b.weight - a.weight);
   }, [rows]);
 
   return (
