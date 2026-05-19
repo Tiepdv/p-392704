@@ -597,7 +597,7 @@ const DetailView: React.FC<{
                             <div className="divide-y divide-slate-200 border border-slate-200 rounded-md bg-white">
                               {partnerList.map((pg) => {
                                 const pkey = `${key}::${pg.partner}`;
-                                const pOpen = !collapsed.has(pkey);
+                                const pOpen = collapsed.has(pkey);
                                 return (
                                   <div key={pkey}>
                                     <button
