@@ -304,19 +304,15 @@ const RecommendedLines: React.FC<{ rows: ResultRow[]; onRefresh: () => void }> =
             />
           </div>
           <div className="md:w-64">
-            <Select value={division} onValueChange={setDivision}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__all__">All divisions</SelectItem>
-                {divisions.map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              value={division}
+              onChange={setDivision}
+              searchPlaceholder="Search division…"
+              options={[
+                { value: "__all__", label: "All divisions" },
+                ...divisions.map((d) => ({ value: d, label: d })),
+              ]}
+            />
           </div>
         </div>
         {quickPicks.length > 0 && (
