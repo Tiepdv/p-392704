@@ -851,7 +851,7 @@ const AdoptionRate: React.FC<{ allRows: ResultRow[]; gapRows: ResultRow[]; onRef
                     </span>
                   </div>
                   <div className="mt-2 flex items-center gap-3">
-                    <div className="h-2 flex-1 max-w-md bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-2 w-32 bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className={`h-full bg-gradient-to-r ${col.bar} transition-all`}
                         style={{ width: `${d.adoption}%` }}
