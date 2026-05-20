@@ -457,13 +457,15 @@ const DetailView: React.FC<{
       if (domains.length === 0) return;
       const lines = r.ads_txt_lines || [];
       const n = lines.length || 1;
+      const d = domains.length;
       const rowRev = Number(r.revenue_forecast || 0);
-      const perLine = rowRev / n;
-      domains.forEach((d) => {
-        let g = m.get(d);
+      // Split revenue across both domains and lines so totals don't get duplicated
+      const perLine = rowRev / (n * d);
+      domains.forEach((dom) => {
+        let g = m.get(dom);
         if (!g) {
-          g = { domain: d, items: [], revenue: 0 };
-          m.set(d, g);
+          g = { domain: dom, items: [], revenue: 0 };
+          m.set(dom, g);
         }
         lines.forEach((line) => {
           g!.items.push({ row: r, revenue: perLine, line });
